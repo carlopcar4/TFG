@@ -14,6 +14,8 @@ services:
   decidim:
     build: ./decidim_app
     environment:
+      RAILS_ENV: production
+      NODE_ENV: production
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/decidim
     depends_on:
       - postgres

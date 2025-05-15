@@ -21,6 +21,8 @@ function CouncilList() {
         .catch(error => console.error("Error al desplegar:", error))
     };
 
+    const handleView = url => window.open(url, '_blank','noopener,noreferrer');
+
     const handleEdit = (id) => {
         navegar(`/Councils/${id}`);
     };
@@ -72,7 +74,7 @@ function CouncilList() {
                             <td>{String(r.multi_tenant)}</td>
                             <td>{r.status}</td>
                             <td className="acciones">
-                                <button title="Ver"><FaEye /></button>
+                                <button title="Ver" onClick={() => handleView(r.decidim_url)}><FaEye /></button>
                                 <button title="Refrescar" onClick={() => handleReset(r.id)}><FaSyncAlt /></button>
                                 <button title={r.status === 'running'? 'Parar' : 'Desplegar'} 
                                 onClick={() => handleDeploy(r.id)}>{r.status === 'running' ? <FaStop/> : <FaArrowUp/>} </button>
