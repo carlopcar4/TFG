@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 
 class Incidencia(models.Model):
 	class Grado(models.TextChoices):
@@ -29,6 +30,15 @@ class Incidencia(models.Model):
 			(Q(arbol__isnull=False) & Q(alcorque__isnull=True)) |
 			(Q(arbol__isnull=True) & Q(alcorque__isnull=False))),
 		name="check_arbol_alcorque_incidencia",),]
+
+	def clean(self):
+		super().clean()
+		if self.admin_resp and not self.admin_resp.es_admin:
+			raise ValidationError({"admin_resp": "El responsable debe ser un usuario Administrador."})
+
+	def save(self, *args, **kwargs):
+		self.full_clean()
+		return super().save(*args, **kwargs)
 
 	def __str__(self):
 		return f"Incidencia #{self.id}"

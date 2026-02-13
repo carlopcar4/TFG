@@ -1,11 +1,11 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.db import models
 from django.utils import timezone
 
 class Usuario(AbstractUser):
 	class Rol(models.TextChoices):
 		REGISTRADO = "REGISTRADO", "Registrado"
-		ADMINISTRDOR = "ADMINISTRADOR", "Administrador"
+		ADMINISTRADOR = "ADMINISTRADOR", "Administrador"
 
 	class EstadoCuenta(models.TextChoices):
 		ACTIVA = "ACTIVA", "Activa"
@@ -20,5 +20,21 @@ class Usuario(AbstractUser):
 	USERNAME_FIELD = "correo"
 	REQUIRED_FIELDS = ["username"]
 
+	@property
+	def es_admin(self) -> bool:
+		return self.rol == self.Rol.ADMINISTRADOR
+
+	def save(self, *args, **kwargs):
+		es_admin = (self.rol == self.Rol.ADMINISTRADOR)
+		self.is_staff = es_admin
+		super().save(*args, **kwargs)
+		grupo_admin, _ = Group.objects.get_or_create(name="Administradores")
+		if es_admin:
+			self.groups.add(grupo_admin)
+		else:
+			self.groups.remove(grupo_admin)
+
 	def __str__(self):
 		return f"{self.nombre} ({self.correo})"
+
+
