@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario arbolado</title>
+</head>
+<body>
+    <h1>Inventario arbolado</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Bucar (dirección, especie, barrio)" value="{{ q }}">
+        <select name="estado">
+            <option value="">-- Estado (todos) --</option>
+            <option value="Bueno" {% if estado == "BUENO" %}selected{% endif %}>Bueno</option>
+            <option value="REGULAR" {% if estado == "REGULAR" %}selected{% endif %}>Regular</option>
+            <option value="MALO" {% if estado == "MALO" %}selected{% endif %}>Malo</option>
+            <option value="NECESITA_INTERVENCION" {% if estado == "NECESITA_INTERVENCION" %}selected{% endif %}>Necesita intervención</option>
+        </select>
+        <button type="submit">Filtrar</button>
+        <a href="/inventario/arboles/">Reset</a>
+    </form>
+
+    <hr>
+
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Especie</th>
+                <th>Barrio</th>
+                <th>Estado</th>
+                <th>dirección</th>
+                <th>Latitud</th>
+                <th>Longitud</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>
