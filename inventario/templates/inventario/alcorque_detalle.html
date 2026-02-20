@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Alcorque</title>
+</head>
+<body>
+    <h1>Detalle del Alcorque #{{ alcorque.id }}</h1>
+
+    <ul>
+        <li><b>Barrio: </b>{{ alcorque.barrio.nombre }}</li>
+        <li><b>Estado: </b>{{ alcorque.get_estado_display }}</li>
+        <li><b>Dirección: </b>{{ alcorque.direccion|default:"-" }}</li>
+        <li><b>Latitud: </b>{{ alcorque.latitud|default:"-" }}</li>
+        <li><b>Longitud: </b>{{ alcorque.longitud|default:"-" }}</li>
+        <li><b>Observaciones: </b>{{ alcorque.observaciones|default:"-" }}</li>
+    </ul>
+
+    <p><a href="/inventario/alcorques/">Volver al listado</a></p>
+    <p><a href="/incidencias/nueva/?alcorque={{ alcorque.id }}">Crear incidencia</a></p>
+
+</body>
+</html>

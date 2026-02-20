@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle Árbol</title>
+</head>
+<body>
+    <h1>Detalle del Árbol #{{ arbol.id }}</h1>
+
+    <ul>
+        <li><b>Especie: </b>{{ arbol.especie.nombre_comun }}</li>
+        <li><b>Barrio: </b>{{ arbol.barrio.nombre }}</li>
+        <li><b>Estado: </b>{{ arbol.get_estado_display }}</li>
+        <li><b>Dirección: </b>{{ arbol.direccion|default:"-" }}</li>
+        <li><b>Latitud: </b>{{ arbol.latitud|default:"-" }}</li>
+        <li><b>Longitud: </b>{{ arbol.longitud|default:"-" }}</li>
+        <li><b>Fecha plantación: </b>{{ arbol.fecha_plant|date:"Y-m-d H:i"|default:"-" }}</li>
+        <li><b>Observaciones: </b>{{ arbol.observaciones|default:"-" }}</li>
+    </ul>
+
+    <p><a href="/inventario/arboles/">Volver al listado</a></p>
+    <p><a href="/incidencias/nueva/?arbol={{ arbol.id }}">Crear incidencia</a></p>
+</body>
+</html>

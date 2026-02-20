@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario arbolado</title>
+    <title>Inventario alcorques</title>
 </head>
 <body>
-    <h1>Inventario arbolado</h1>
+    <h1>Inventario alcorques</h1>
 
     <form method="get">
-        <input type="text" name="q" placeholder="Bucar (dirección, especie, barrio)" value="{{ q }}">
+        <input type="text" name="q" placeholder="Bucar (dirección, barrio)" value="{{ q }}">
         <select name="estado">
             <option value="">-- Estado (todos) --</option>
             <option value="BUENO" {% if estado == "BUENO" %}selected{% endif %}>Bueno</option>
@@ -18,7 +18,7 @@
             <option value="NECESITA_INTERVENCION" {% if estado == "NECESITA_INTERVENCION" %}selected{% endif %}>Necesita intervención</option>
         </select>
         <button type="submit">Filtrar</button>
-        <a href="/inventario/arboles/">Reset</a>
+        <a href="/inventario/alcorques/">Reset</a>
     </form>
 
     <hr>
@@ -27,31 +27,27 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Especie</th>
                 <th>Barrio</th>
                 <th>Estado</th>
-                <th>dirección</th>
+                <th>Dirección</th>
                 <th>Latitud</th>
                 <th>Longitud</th>
-                <th>Fecha plantación</th>
                 <th>Observaciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for a in arboles %}
+            {% for a in alcorques %}
             <tr>
-                <td><a href="{% url 'arbol_detalle' a.id %}">{{ a.id }}</a></td>
-                <td>{{ a.especie.nombre_comun }}</td>
+                <td><a href="{% url 'alcorque_detalle' a.id %}">{{ a.id }}</a></td>
                 <td>{{ a.barrio.nombre }}</td>
                 <td>{{ a.get_estado_display }}</td>
                 <td>{{ a.direccion|default:"-" }}</td>
                 <td>{{ a.latitud|default:"-" }}</td>
                 <td>{{ a.longitud|default:"-" }}</td>
-                <td>{{ a.fecha_plant|date:"Y-m-d H:i" }}</td>
                 <td>{{ a.observaciones|default:"-" }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="7">No hay árboles con esos filtros.</td></tr>
+            <tr><td colspan="7">No hay alcorques con esos filtros.</td></tr>
             {% endfor %}
         </tbody>
     </table>
