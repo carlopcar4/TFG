@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidencias</title>
+</head>
+<body>
+    <h1>Incidencias</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Buscar por título o descripción" value="{{ q }}">
+        <select name="estado">
+            <option value="">-- Estado (todos) --</option>
+            <option value="ABIERTA" {% if estado == "ABIERTA" %}selected{% endif %}>Abierta</option>
+            <option value="EN_PROCESO" {% if estado == "EN_PROCESO" %}selected{% endif %}>En proceso</option>
+            <option value="CERRADA" {% if estado == "CERRADA" %}selected{% endif %}>Cerrada</option>
+        </select>
+        <button type="submit">Filtrar</button>
+        <a href="/incidencias/">Reset</a>
+    </form>
+
+    <p><a href="/inicdencias/nueva/">+ Nueva incidencia</a></p>
+    
+    <hr>
+
+    <table border="1" cellpadding="6">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Grado</th>
+                <th>Asociación</th>
+                <th>Usuario</th>
+                <th>Admin responsable</th>
+                <th>Fecha reporte</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in incidencias %}
+            <tr>
+                <td><a href="{% url 'incidencia_detalle' i.id %}">{{ i.id }}</a></td>
+                <td>{{ i.titulo }}</td>
+                <td>{{ i.get_estado_display }}</td>
+                <td>{{ i.get_grado_incidencia_display }}</td>
+                <td>
+                    {% if i.arbol %}
+                        Árbol #{{ i.alcorque.id }}
+                    {% elif i.alcorque %}
+                        Alcorque #{{ i.alcorque.id }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ i.usuario.correo }}</td>
+                <td>{% if i.admin_resp %}{{ i.admin_resp.correo }}{% else %}-{% endif %}</td>
+                <td>{{ i.fecha_reporte|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">No hay incidencias.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

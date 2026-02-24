@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incidencia #{{ incidencia.id }}</title>
+</head>
+<body>
+    <h1>Incidencia #{{ incidencia.id }}</h1>
+    <p><b>Título:</b> {{ incidencia.titulo }}</p>
+    <p><b>Descripción: </b>{{ incidencia.descripcion }}</p>
+    <p><b>Grado: </b>{{ incidencia.get_grado_incidencia_display }}</p>
+    <p><b>Estado: </b>{{ incidencia.get_estado_display }}</p>
+    <p><b>Usuario: </b>{{ incidencia.usuario.correo }}</p>
+    <p><b>Admin responsable:</b>
+    {% if incidencia.admin_resp %}
+        {{ incidencia.admin_resp.correo }}
+    {% else %}
+        -
+    {% endif %}
+    </p>
+    <p><b>Fecha reporte: </b>{{ incdencia.fecha_reporte|date:"Y-m-d H:i" }}</p>
+    <p><b>Fecha actualización: </b>{{ incidencia.fecha_act|date:"Y-m-d H:i" }}</p>
+    <p><b>Asociación: </b>
+        {% if incidencia.arbol %}
+            Árbol #{{ incidencia.arbol.id }}
+        {% elif incidencia.alcorque %}
+            Alcorque #{{ incidencia.alcorque.id }}
+        {% else %}
+            -
+        {% endif %}
+    </p>
+
+    <hr>
+
+    {% if es_admin %}
+        <h2>Gestión (admin)</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <p>
+                <label for="estado"><b>Estado</b></label><br>
+                <select name="estado" id="estado">
+                    {% for value, label in estados %}
+                        <option value="{{ value }}" {% if incidencia.estado == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                {% if errores.estado %}
+                    <br><span style="color:red;">{{ errores.estado|join:", "}}</span>
+                {% endif %}
+            </p>
+
+            <p>
+                <label for="admin_resp"><b>Admin responsable</b></label><br>
+                <select name="admin_resp" id="admin_resp">
+                    <option value="">-- Sin responsable --</option>
+                    {% for u in admins_validos %}
+                    <option value="{{ u.id }}" {% if incidencia.admin_resp and incidencia.admin_resp.id == u.id %}selected{% endif %}>
+                        {{ u.correo }}
+                    </option>
+                    {% endfor %}
+                </select>
+                {% if errores.admin_resp %}
+                    <br><span style="color:red;">{{ errores.admin_resp|join:", " }}</span>
+                {% endif %}
+            </p>
+            <button type="submit">Guardar cambios</button>
+        </form>
+    {% else %}
+        <p><i>No eres admin: no puedes modificar estado ni asignar responsable.</i></p>
+    {% endif %}
+
+    <p><a href="/incidencias/">volver a incidencias</a></p>
+</body>
+</html>
