@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario arbolado</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block content %}
+
     <h1>Inventario arbolado</h1>
 
     <form method="get">
-        <input type="text" name="q" placeholder="Bucar (dirección, especie, barrio)" value="{{ q }}">
+        <input type="text" name="q" placeholder="Buscar" value="{{ q }}">
         <select name="estado">
             <option value="">-- Estado (todos) --</option>
             <option value="BUENO" {% if estado == "BUENO" %}selected{% endif %}>Bueno</option>
@@ -47,7 +42,7 @@
                 <td>{{ a.direccion|default:"-" }}</td>
                 <td>{{ a.latitud|default:"-" }}</td>
                 <td>{{ a.longitud|default:"-" }}</td>
-                <td>{{ a.fecha_plant|date:"Y-m-d H:i" }}</td>
+                <td>{{ a.fecha_plant|date:"Y-m-d H:i"|default:"-" }}</td>
                 <td>{{ a.observaciones|default:"-" }}</td>
             </tr>
             {% empty %}
@@ -55,5 +50,5 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+
+{% endblock %}

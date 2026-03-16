@@ -4,18 +4,18 @@ from .models import Incidencia
 @admin.register(Incidencia)
 class IncidenciaAdmin(admin.ModelAdmin):
 	list_display=("id", "titulo", "estado", "grado_incidencia", "usuario", "admin_resp", "fecha_reporte", 
-		"fecha_act", "get_objetivo",)
+		"fecha_act", "objeto",)
 
 	list_filter = ("estado", "grado_incidencia", "fecha_reporte")
-	search_fields = ("titulo", "descripcion", "usuario__username")
+	search_fields = ("titulo", "descripcion", "usuario__correo", "admin_resp__correo")
 	ordering = ("-fecha_reporte",)
 	readonly_fields = ("fecha_reporte", "fecha_act")
 
-	def get_objetivo(self, obj):
-		if obj.arbol_id is not None:
+	def objeto(self, obj):
+		if obj.arbol_id:
 			return f"Árbol #{obj.arbol_id}"
-		if obj.alcorque_id is not None:
-			return f"Alcroque #{obj.alcorque_id}"
+		if obj.alcorque_id:
+			return f"Alcorque #{obj.alcorque_id}"
 		return "-"
 
-	get_objetivo.short_description = "Objetivo"
+	objeto.short_description = "Objetivo"

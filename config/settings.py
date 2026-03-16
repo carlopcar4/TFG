@@ -14,6 +14,11 @@ from pathlib import Path
 
 AUTH_USER_MODEL = "cuentas.Usuario"
 
+LOGIN_REDIRECT_URL = "/inventario/arboles/"
+LOGOUT_REDIRECT_URL = "/accoutns/login/"
+LOGIN_URL = "/accounts/login/"
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -63,7 +68,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

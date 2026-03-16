@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.contrib.auth.models import Group
+from django.contrib import messages
+from .forms import IncidenciaForm, IncidenciaDetalleForm
 
 from inventario.models import Arbol, Alcorque
 from .models import Incidencia
@@ -10,7 +12,6 @@ from cuentas.models import Usuario
 
 
 @login_required
-
 def incidencia_lista(request):
     qs = Incidencia.objects.select_related(
         "usuario", "admin_resp", "arbol", "alcorque"
@@ -38,55 +39,40 @@ def incidencia_lista(request):
 
 
 
+@login_required
 def incidencia_detalle(request, pk):
-    incidencia = get_object_or_404(
-        Incidencia.objects.select_related("usuario", "admin_resp", "arbol", "alcorque"),
-        pk=pk
-    )
-    
-    errores = {}
+    incidencia = get_object_or_404(Incidencia.objects.select_related("usuario", "admin_resp", "arbol", "alcorque"), pk=pk)
+
     es_admin = getattr(request.user, "es_admin", False)
-    
     grupo_admin = Group.objects.filter(name="Administradores").first()
     admins_validos = Usuario.objects.none()
     if grupo_admin:
         admins_validos = Usuario.objects.filter(groups=grupo_admin).order_by("correo")
+        
+    form = IncidenciaDetalleForm(instance=incidencia)
+    form.fields["admin_resp"].queryset = admins_validos
+    
     
     if request.method == "POST":
+        form = IncidenciaDetalleForm(request.POST, instance=incidencia)
+        form.fields["admin_resp"].queryset = admins_validos
         if not es_admin:
-            errores = {"general": ["No tienes permisos para modificar esta incidencia."]}
-        else:
-            estado = request.POST.get("estado", "").strip()
-            admin_resp_id = request.POST.get("admin_resp", "").strip()
+            messages.error(request, "No tienes permisos")
+            return redirect("incidencia_detalle", pk=incidencia.pk)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cambios guardados")
+            return redirect("incidencia_detalle", pk=incidencia.pk)
 
-            if estado:
-                incidencia.estado = estado
-                
-            if admin_resp_id == "":
-                incidencia.admin_resp = None
-            elif admin_resp_id.isdigit():
-                candidato = Usuario.objects.filter(pk=int(admin_resp_id)).first()
-                incidencia.admin_resp = candidato
-                
-            try:
-                incidencia.save()
-                return redirect("incidencia_detalle", pk=incidencia.id)
-            except ValidationError as e:
-                if hasattr(e, "message_dict"):
-                    errores = e.message_dict
-                else:
-                    errores = {"general": e.message}
-                    
-    return render(request, "incidencias/incidencia_detalle.html",{
+    return render(request, "incidencias/incidencia_detalle.html", {
         "incidencia": incidencia,
-        "estados": Incidencia.Estado.choices,
-        "admins_validos": admins_validos,
-        "errores": errores,
+        "form": form,
         "es_admin": es_admin,
     })
 
 
 
+@login_required
 def incidencia_nueva(request):
     arbol_id = request.GET.get("arbol")
     alcorque_id = request.GET.get("alcorque")
@@ -103,42 +89,41 @@ def incidencia_nueva(request):
     if arbol and alcorque:
         alcorque = None
     
-    errores = {}
-    
+    form = IncidenciaForm()
     if request.method == "POST":
-        titulo = request.POST.get("titulo", "").strip()
-        descripcion = request.POST.get("descripcion", "").strip()
-        grado_incidencia = request.POST.get("grado_incidencia", Incidencia.GRADO.LEVE)
-        
+        form = IncidenciaForm(request.POST)
+
         arbol_post = request.POST.get("arbol")
         alcorque_post = request.POST.get("alcorque")
-        
-        arbol = Arbol.objects.filter(pk=arbol_post).first() if arbol_post else None
-        alcorque = Alcorque.objects.filter(pk=alcorque_post).first() if alcorque_post else None
-        
-        incidencia = Incidencia(
-            titulo=titulo,
-            descripcion=descripcion,
-            grado_incidencia=grado_incidencia,
-            usuario=request.user,
-            arbol=arbol,
-            alcorque=alcorque,
-        )
-        
-        try:
-            incidencia.save()
-            return redirect("/incidencias/")
-        except ValidationError as e:
-            if hasattr(e, "message_dict"):
-                errores = e.message_dict
+
+        if arbol is None and arbol_post:
+            arbol = get_object_or_404(Arbol, pk=arbol_post)
+        if alcorque is None and alcorque_post:
+            alcorque = get_object_or_404(Alcorque, pk=alcorque_post)
+        if arbol and alcorque:
+            alcorque = None
+
+        if arbol==None and alcorque==None:
+            form.add_error(None, "No hay asociado árbol o alcorque, vete a la lista correspondiente y crea la incidencia desde él.")
+
+        if form.is_valid():
+            incidencia = form.save(commit=False)
+            incidencia.usuario = request.user
+            incidencia.arbol = arbol
+            incidencia.alcorque = alcorque
+            try:
+                incidencia.save()
+                
+            except ValidationError as a:
+                form.add_error(None, a)
             else:
-                errores = {"general": e.message}
+                messages.success(request, "Incidencia creada correctamente")
+                return redirect("incidencia_lista")
     
     context = {
         "arbol": arbol,
         "alcorque": alcorque,
-        "grados": Incidencia.Grado.choices,
-        "errores": errores,
+        "form": form,
     }
     return render(request, "incidencias/incidencia_nueva.html", context)
 

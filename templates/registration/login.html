@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Iniciar sesión</h1>
+
+    {% if form.errors %}
+        <p style="color: red;">Credenciales incorrectas</p>
+    {% endif %}
+
+    {% if next %}
+        <p>Vas a acceder a una zona protegida</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Entrar</button>
+        <input type="hidden" name="next" value="{{ next }}">
+    </form>
+</body>
+</html>

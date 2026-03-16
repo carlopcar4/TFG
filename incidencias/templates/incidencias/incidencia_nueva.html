@@ -1,77 +1,57 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva incidencia</title>
-</head>
-<body>
-    <h1>Nueva incidencia</h1>
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Nueva incidencia</h1>
+
+{% if arbol %}
+<p><b>Asociada a Árbol #{{ arbol.id }}</b> ({{ arbol.especie.nombre_comun }} - {{ arbol.barrio.nombre }})</p>
+{% elif alcorque %}
+<p><b>Asociada a Alcorque #{{ alcorque.id }}</b>({{ alcorque.barrio.nombre }})</p>
+{% else %}
+<p><b>Sin asociación</b> (debes elegir árbol o alcorque)</p>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+    <p>
+        <label for="{{ form.titulo.id_for_label }}">Título</label><br>
+        {{ form.titulo }}
+        {{ form.titulo.errors }}
+    </p>
+
+    <p>
+        <label for="{{ form.descripcion.id_for_label }}">Descripción</label><br>
+        {{ form.descripcion }}
+        {{ form.descripcion.errors }}
+    </p>
+
+    <p>
+        <label for="{{ form.grado_incidencia.id_for_label }}">Grado</label><br>
+        {{ form.grado_incidencia }}
+        {{ form.grado_incidencia.errors }}
+    </p>
+
 
     {% if arbol %}
-        <p><b>Asociada a Árbol #{{ arbol.id }}</b> ({{ arbol.especie.nombre_comun }} - {{ arbol.barrio.nombre }})</p>
+    <input type="hidden" name="arbol" value="{{ arbol.id }}">
+    {% endif %}
+
+    {% if alcorque %}
+    <input type="hidden" name="alcorque" value="{{ alcorque.id}}">
+    {% endif %}
+
+
+    <button type="submit">Crear incidencia</button>
+    {% if arbol %}
+    <a href="{% url 'arbol_lista' %}">Cancelar</a>
     {% elif alcorque %}
-        <p><b>Asociada a Alcorque #{{ alcorque.id }}</b>({{ alcorque.barrio.nombre }})</p>
+    <a href="{% url 'alcorque_lista' %}">Cancelar</a>
     {% else %}
-        <p><b>Sin asociación</b> (debes elegir árbol o alcorque)</p>
+    <a href="{% url 'arbol_lista' %}">Cancelar</a>
     {% endif %}
-    
-    {% if errores.general %}
-        <p style="color:red;">
-            {% if errores.general|length > 0 and errores.general.0 %}
-                {{ errores.general|join:", " }}
-            {% else %}
-                {{ errores.general }}
-            {% endif %}
-        </p>
-    {% endif %}
+</form>
 
-    <form method="post">
-        {% csrf_token %}
-
-        <p>
-            <label for="titulo">Título</label><br>
-            <input type="text" id="titulo" name="titulo" maxlength="120" required value="{{ request.POST.titulo|default:'' }}">
-            {% if errores.titulo %}<br><span style="color:red;">{{ errores.titulo|join:", " }}</span>{% endif %}
-        </p>
-
-        <p>
-            <label for="descripcion">Descripcion</label><br>
-            <textarea name="descripcion" id="descripcion" rows="6" required></textarea>
-            {% if errores.descripcion %}<br><span style="color:red;">{{ errores.descripcion|join:", " }}</span>{% endif %}
-        </p>
-
-        <p>
-            <label for="grado_incidencia">Grado</label><br>
-            <select name="grado_incidencia" id="grado_incidencia">
-                {% for value, label in grados %}
-                    <option value="{{ value }}">{{ label }}</option>
-                {% endfor %}
-            </select>
-            {% if errores.grado_incidencia %}<br><span style="color:red;">{{ errores.grado_incidencia|join:", " }}</span>{% endif %}
-        </p>
-
-
-        {% if arbol %}
-            <input type="hidden" name="arbol" value="{{ arbol.id }}">
-        {% endif %}
-
-        {% if alcorque %}
-            <input type="hidden" name="alcorque" value="{{ alcorque.id}}">
-        {% endif %}
-
-        {% if errores.arbol %}<p style="color:red;">{{ errores.arbol|join:", " }}</p>{% endif %}
-        {% if errores.alcorque %}<p style="color:red;">{{ errores.alcorque|join:", " }}</p>{% endif %}
-
-        <button type="submit">Crear incidencia</button>
-        {% if arbol %}
-            <a href="/inventario/arboles/">Cancelar</a>
-        {% elif alcorque %}
-            <a href="/inventario/alcorques/">Cancelar</a>
-        {% else %}
-            <a href="/inventario/arboles">Cancelar</a>
-        {% endif %}
-    </form>
-    
-</body>
-</html>
+{% endblock %}
