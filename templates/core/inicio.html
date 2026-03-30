@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio | Inventario arbolado de Sevilla{% endblock %}
+
+{% block content %}
+<div class="pagina-inicio">
+    <header class="cabecera-inicio">
+        <h1>Inventario arbolado de Sevilla</h1>
+    </header>
+
+    <div class="contenido-principal">
+        <aside>
+            <h2>Sobre el proyecto</h2>
+            <p>Aplicación para consultar los árboles y alcorques de Sevilla y facilitar la comunicación de incidencias.
+            </p>
+
+            <h2>Resumen</h2>
+            <ul>
+                <li>Total de árboles: {{ total_arboles }}</li>
+                <li>Total de incidencias: {{ total_incidencia }}</li>
+            </ul>
+
+            <h3>Leyenda</h3>
+            <ul>
+                <li>Árbol en buen estado</li>
+                <li>Árbol en estado regular</li>
+                <li>Árbol en mal estado</li>
+                <li>Alcorque vacío</li>
+            </ul>
+
+            <h3>Filtros</h3>
+            <p>Aquí irán los filtros por itpo y estado</p>
+        </aside>
+
+        <section>
+            <h2>Mapa interactivo</h2>
+            <div id="mapa" style="height: 500px; width: 800px; border: 4px;">
+                Aquí irá OpenStreetMap
+            </div>
+        </section>
+    </div>
+</div>
+
+{{ arboles|json_script:"arboles-data" }}
+{{ alcorques|json_script:"alcorques-data"}}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    const mapa = L.map('mapa').setView([37.388611, -5.995556], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    referrerPolicy: 'origin'
+}).addTo(mapa);
+
+const arboles = JSON.parse(document.getElementById('arboles-data').textContent);
+const alcorques = JSON.parse(document.getElementById('alcorques-data').textContent);
+
+arboles.forEach(arbol => {
+    if (arbol.latitud && arbol.longitud) {
+        L.circleMarker([arbol.latitud, arbol.longitud], {color: "green"})
+            .addTo(mapa)
+            .bindPopup(`
+            Arbol #${arbol.id}<br>
+            <a href="/inventario/arboles/${arbol.id}">Ver detalles</a><br>
+            <a href="/incidencias/nueva/?arbol=${arbol.id}">Crear incidencia</a>
+            `);
+    }
+})
+
+alcorques.forEach(alcorque => {
+    if (alcorque.latitud && alcorque.longitud) {
+        L.circleMarker([alcorque.latitud, alcorque.longitud], {color: 'red'})
+            .addTo(mapa)
+            .bindPopup(`
+            Alcorque #${alcorque.id}<br>
+            <a href="/inventario/alcorques/${alcorque.id}">Ver detalles</a><br>
+            <a href="/incidencias/nueva/?alcorque=${alcorque.id}">Crear incidencia</a>`);
+    }
+})
+</script>
+{% endblock %}

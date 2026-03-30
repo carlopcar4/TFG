@@ -22,7 +22,7 @@ class AlcorqueAdmin(admin.ModelAdmin):
     search_fields = ("direccion", "barrio__nombre")
     ordering = ("-id",)
     list_per_page = 25
-    list_select_related = ("especie", "barrio")
+    list_select_related = ("barrio",)
 
 
 @admin.register(Barrio)
