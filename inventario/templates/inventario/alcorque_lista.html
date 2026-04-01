@@ -4,17 +4,22 @@
 <h1>Inventario alcorques</h1>
 
 <form method="get">
-    <input type="text" name="q" placeholder="Bucar (dirección, barrio)" value="{{ q }}">
+    <input type="text" name="q" placeholder="Buscar (dirección, barrio)" value="{{ q }}">
     <select name="estado">
         <option value="">-- Estado (todos) --</option>
         <option value="BUENO" {% if estado == "BUENO" %}selected{% endif %}>Bueno</option>
         <option value="REGULAR" {% if estado == "REGULAR" %}selected{% endif %}>Regular</option>
         <option value="MALO" {% if estado == "MALO" %}selected{% endif %}>Malo</option>
-        <option value="NECESITA_INTERVENCION" {% if estado == "NECESITA_INTERVENCION" %}selected{% endif %}>Necesita
-            intervención</option>
+        <option value="NECESITA_INTERVENCION" {% if estado == "NECESITA_INTERVENCION" %}selected{% endif %}>Necesita intervención</option>
+    </select>
+    <select name="barrio">
+        <option value="">-- Barrio (todos) --</option>
+        {% for barrio in barrios %}
+            <option value="{{ barrio.id }}" {% if barrio_id|default:'' == barrio.id|stringformat:'s' %}selected{% endif %}>{{ barrio.nombre }}</option>
+        {% endfor %}
     </select>
     <button type="submit">Filtrar</button>
-    <a href="/inventario/alcorques/">Reset</a>
+    <a href="{% url 'alcorque_lista' %}">Reset</a>
 </form>
 
 <hr>
@@ -22,9 +27,10 @@
 <table border="1" cellpadding="6">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>Id</th>
             <th>Barrio</th>
             <th>Estado</th>
+            <th>Potencial plantación</th>
             <th>Dirección</th>
             <th>Latitud</th>
             <th>Longitud</th>
@@ -37,6 +43,7 @@
             <td><a href="{% url 'alcorque_detalle' a.id %}">{{ a.id }}</a></td>
             <td>{{ a.barrio.nombre }}</td>
             <td>{{ a.get_estado_display }}</td>
+            <td>{{ a.get_potencial_plant_display }}</td>
             <td>{{ a.direccion|default:"-" }}</td>
             <td>{{ a.latitud|default:"-" }}</td>
             <td>{{ a.longitud|default:"-" }}</td>
@@ -44,7 +51,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7">No hay alcorques con esos filtros.</td>
+            <td colspan="8">No hay alcorques con esos filtros.</td>
         </tr>
         {% endfor %}
     </tbody>

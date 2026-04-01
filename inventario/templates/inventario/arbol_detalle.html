@@ -2,7 +2,6 @@
 {% block content %}
 
 <h1>Detalle del Árbol #{{ arbol.id }}</h1>
-
 <ul>
     <li><b>Especie: </b>{{ arbol.especie.nombre_comun }}</li>
     <li><b>Barrio: </b>{{ arbol.barrio.nombre }}</li>
@@ -16,5 +15,20 @@
 
 <p><a href="{% url 'arbol_lista' %}">Volver al listado</a></p>
 <p><a href="/incidencias/nueva/?arbol={{ arbol.id }}">Crear incidencia</a></p>
+
+<h2>Incidencias relacionadas</h2>
+{% if incidencias %}
+    <ul>
+        {% for incidencia in incidencias %}
+        <li>
+            <a href="{% url 'incidencia_detalle' incidencia.id %}">{{ incidencia.titulo }}</a>
+            - {{ incidencia.get_estado_display}} - {{ incidencia.get_grado_incidencia_display }}
+            ({{ incidencia.fecha_reporte|date:"Y-m-d"}})
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay incidencias asociadas a este arbol.</p>
+{% endif %}
 
 {% endblock %}

@@ -15,7 +15,7 @@ from pathlib import Path
 AUTH_USER_MODEL = "cuentas.Usuario"
 
 LOGIN_REDIRECT_URL = "/inventario/arboles/"
-LOGOUT_REDIRECT_URL = "/accoutns/login/"
+LOGOUT_REDIRECT_URL = "/"
 LOGIN_URL = "/accounts/login/"
 
 

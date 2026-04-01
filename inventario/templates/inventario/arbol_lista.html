@@ -5,6 +5,14 @@
 
     <form method="get">
         <input type="text" name="q" placeholder="Buscar" value="{{ q }}">
+
+        <select name="especie">
+            <option value="">-- Especie (todas) --</option>
+            {% for especie in especies %}
+                <option value="{{ especie.id }}" {% if especie_id|default:'' == especie.id|stringformat:'s' %}selected{% endif %}>{{ especie.nombre_comun }}</option>
+            {% endfor %}
+        </select>
+
         <select name="estado">
             <option value="">-- Estado (todos) --</option>
             <option value="BUENO" {% if estado == "BUENO" %}selected{% endif %}>Bueno</option>
@@ -12,8 +20,17 @@
             <option value="MALO" {% if estado == "MALO" %}selected{% endif %}>Malo</option>
             <option value="NECESITA_INTERVENCION" {% if estado == "NECESITA_INTERVENCION" %}selected{% endif %}>Necesita intervención</option>
         </select>
+
+        <select name="barrio">
+            <option value="">-- Barrio (todos) --</option>
+            {% for barrio in barrios %}
+                <option value="{{ barrio.id }}" {% if barrio_id|default:'' == barrio.id|stringformat:'s' %}selected{% endif %}>{{ barrio.nombre }}</option>
+            {% endfor %}
+        </select>
+
         <button type="submit">Filtrar</button>
-        <a href="/inventario/arboles/">Reset</a>
+        <a href="{% url 'arbol_lista' %}">Reset</a>
+
     </form>
 
     <hr>
@@ -21,11 +38,11 @@
     <table border="1" cellpadding="6">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Id</th>
                 <th>Especie</th>
                 <th>Barrio</th>
                 <th>Estado</th>
-                <th>dirección</th>
+                <th>Dirección</th>
                 <th>Latitud</th>
                 <th>Longitud</th>
                 <th>Fecha plantación</th>
@@ -46,7 +63,9 @@
                 <td>{{ a.observaciones|default:"-" }}</td>
             </tr>
             {% empty %}
-            <tr><td colspan="7">No hay árboles con esos filtros.</td></tr>
+            <tr>
+                <td colspan="9">No hay arboles con esos filtros.</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

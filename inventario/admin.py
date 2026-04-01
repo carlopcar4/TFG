@@ -3,9 +3,7 @@ from .models import Barrio, Especie, Arbol, Alcorque
 
 @admin.register(Arbol)
 class ArbolAdmin(admin.ModelAdmin):
-    list_display = ("id", "especie", "barrio", "estado", "direccion", "latitud",
-                "longitud", "fecha_plant")
-
+    list_display = ("id", "especie", "barrio", "estado", "direccion", "latitud", "longitud", "fecha_plant")
     list_filter = ("estado", "barrio", "especie")
     search_fields = ("direccion", "especie__nombre_comun", "barrio__nombre")
     ordering = ("-id",)
@@ -15,10 +13,8 @@ class ArbolAdmin(admin.ModelAdmin):
 
 @admin.register(Alcorque)
 class AlcorqueAdmin(admin.ModelAdmin):
-    list_display = ("id", "barrio", "estado", "direccion", "latitud",
-                "longitud")
-    
-    list_filter = ("estado", "barrio")
+    list_display = ("id", "barrio", "estado", "potencial_plant", "direccion", "latitud", "longitud")
+    list_filter = ("estado", "barrio", "potencial_plant")
     search_fields = ("direccion", "barrio__nombre")
     ordering = ("-id",)
     list_per_page = 25

@@ -2,10 +2,10 @@
 {% block content %}
 
 <h1>Detalle del Alcorque #{{ alcorque.id }}</h1>
-
 <ul>
     <li><b>Barrio: </b>{{ alcorque.barrio.nombre }}</li>
     <li><b>Estado: </b>{{ alcorque.get_estado_display }}</li>
+    <li><b>Potencial de plantación: </b>{{ alcorque.get_potencial_plant_display }}</li>
     <li><b>Dirección: </b>{{ alcorque.direccion|default:"-" }}</li>
     <li><b>Latitud: </b>{{ alcorque.latitud|default:"-" }}</li>
     <li><b>Longitud: </b>{{ alcorque.longitud|default:"-" }}</li>
@@ -14,5 +14,20 @@
 
 <p><a href="{% url 'alcorque_lista' %}">Volver al listado</a></p>
 <p><a href="/incidencias/nueva/?alcorque={{ alcorque.id }}">Crear incidencia</a></p>
+
+<h2>Incidencias relacionadas</h2>
+{% if incidencias %}
+    <ul>
+        {% for incidencia in incidencias %}
+        <li>
+            <a href="{% url 'incidencia_detalle' incidencia.id %}">{{ incidencia.titulo }}</a>
+            - {{ incidencia.get_estado_display}} - {{ incidencia.get_grado_incidencia_display }}
+            ({{ incidencia.fecha_reporte|date:"Y-m-d"}})
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No hay incidencias asociadas a este alcorque.</p>
+{% endif %}
 
 {% endblock %}

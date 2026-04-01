@@ -1,80 +1,86 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from .models import Arbol, Alcorque
+from .models import Arbol, Alcorque, Barrio, Especie
 
 def arbol_lista(request):
-	q = request.GET.get("q", "").strip()
-	estado = request.GET.get("estado", "").strip()
-	barrio_id = request.GET.get("barrio", "").strip()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    barrio_id = request.GET.get("barrio", "").strip()
+    especie_id = request.GET.get("especie", "").strip()
 
-	qs = Arbol.objects.select_related("especie", "barrio").all()
+    qs = Arbol.objects.select_related("especie", "barrio").all()
 
 # Buscar por dirección
-	if q:
-			qs = qs.filter(Q(direccion__icontains=q) | Q(especie__nombre_comun__icontains=q) | Q(barrio__nombre__icontains=q))
+    if q:
+        qs = qs.filter(
+			Q(direccion__icontains=q)
+			| Q(especie__nombre_comun__icontains=q)
+			| Q(barrio__nombre__icontains=q)
+		)
 
-	if estado:
-		qs = qs.filter(estado=estado)
+    if estado:
+        qs = qs.filter(estado=estado)
 
-	if barrio_id.isdigit():
-		qs = qs.filter(barrio_id=int(barrio_id))
+    if barrio_id.isdigit():
+        qs = qs.filter(barrio_id=int(barrio_id))
 
-	qs = qs.order_by("id")
+    if especie_id.isdigit():
+        qs = qs.filter(especie_id=int(especie_id))
 
-	context = {
+    qs = qs.order_by("id")
+
+    context = {
 		"arboles": qs,
 		"q": q,
 		"estado": estado,
 		"barrio_id": barrio_id,
+		"especei_id": especie_id,
+		"especies": Especie.objects.order_by("nombre_comun"),
+		"barrios": Barrio.objects.order_by("nombre"),
+		"estados": Arbol.Estado.choices,
 	}
 
-	return render(request, "inventario/arbol_lista.html", context)
+    return render(request, "inventario/arbol_lista.html", context)
+
 
 
 def alcorque_lista(request):
-	q = request.GET.get("q", "").strip()
-	estado = request.GET.get("estado", "").strip()
-	barrio_id = request.GET.get("barrio", "").strip()
+    q = request.GET.get("q", "").strip()
+    estado = request.GET.get("estado", "").strip()
+    barrio_id = request.GET.get("barrio", "").strip()
 
-	qs = Alcorque.objects.select_related("barrio").all()
+    qs = Alcorque.objects.select_related("barrio").all()
 
 # Buscar por dirección
-	if q:
-			qs = qs.filter(Q(direccion__icontains=q) | Q(barrio__nombre__icontains=q))
+    if q:
+        qs = qs.filter(Q(direccion__icontains=q) | Q(barrio__nombre__icontains=q))
 
-	if estado:
-		qs = qs.filter(estado=estado)
+    if estado:
+        qs = qs.filter(estado=estado)
 
-	if barrio_id.isdigit():
-		qs = qs.filter(barrio_id=int(barrio_id))
+    if barrio_id.isdigit():
+        qs = qs.filter(barrio_id=int(barrio_id))
 
-	qs = qs.order_by("id")
+    qs = qs.order_by("id")
 
-	context = {
+    context = {
 		"alcorques": qs,
 		"q": q,
 		"estado": estado,
 		"barrio_id": barrio_id,
+		"barrios": Barrio.objects.order_by("nombre"),
+		"estados": Alcorque.Estado.choices,
 	}
 
-	return render(request, "inventario/alcorque_lista.html", context)
+    return render(request, "inventario/alcorque_lista.html", context)
+
 
 
 def arbol_detalle(request, pk):
-	arbol = get_object_or_404(
-		Arbol.objects.select_related("especie", "barrio"),
-		pk=pk
-	)
-	return render(request, "inventario/arbol_detalle.html", {"arbol": arbol})
+    arbol = get_object_or_404(Arbol.objects.select_related("especie", "barrio"), pk=pk)
+    return render(request, "inventario/arbol_detalle.html", {"arbol": arbol})
 
 
 def alcorque_detalle(request, pk):
-	alcorque = get_object_or_404(
-		Alcorque.objects.select_related("barrio"),
-		pk=pk
-	)
-	return render(request, "inventario/alcorque_detalle.html", {"alcorque": alcorque})
-
-
-
-
+    alcorque = get_object_or_404(Alcorque.objects.select_related("barrio"), pk=pk)
+    return render(request, "inventario/alcorque_detalle.html", {"alcorque": alcorque})
