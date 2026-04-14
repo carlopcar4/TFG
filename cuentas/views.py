@@ -13,12 +13,14 @@ def signup(request):
         if form.is_valid():
             usuario = form.save()
             login(request, usuario)
-            messages.success(request, f"!Bienvenido, {usuario.nombre}! Tu cuenta ha sido creada correctamente.")
             return redirect("inicio")
         else:
-            for field, errors in form.errors.items():
+            for errors in form.errors.values():
                 for error in errors:
-                    messages.error(request, f"{field}: {error}")
+                    messages.error(request, str(error))
+            # for field, errors in form.errors.items():
+            #     for error in errors:
+            #         messages.error(request, f"{error}")
     else:
         form = CrearUsuario()
 
@@ -35,7 +37,6 @@ def login_view(request):
         
         if usuario:
             login(request, usuario)
-            messages.success(request, f"!Bienvenido, {usuario.nombre}")
             return redirect("inicio")
         else:
             messages.error(request, "Correo o contraseña incorrectos")
@@ -44,5 +45,4 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "Has cerrado sesión correctamente")
-    return redirect("arbol_lista")
+    return redirect("inicio")

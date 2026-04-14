@@ -3,13 +3,6 @@
 {% block content %}
 <div style="max-width: 500px; margin: 50px auto;">
     <h1>Iniciar sesión</h1>
-    {% if messages %}
-        {% for message in messages %}
-            <div style="padding: 10px; margin: 10px 0; border-radius: 4px;">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
 
     <form method="post" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
         {% csrf_token %}

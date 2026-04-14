@@ -14,6 +14,7 @@
                     <a href="{% url 'arbol_lista' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Arboles</a>
                     <a href="{% url 'alcorque_lista' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Alcorques</a>
                     {% if user.is_authenticated %}
+                        <a href="{% url 'incidencia_lista' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Mis incidencias</a>
                         <a href="{% url 'nueva_incidencia' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Nueva incidencia</a>
                     {% endif %}
                 </div>
