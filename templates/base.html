@@ -7,20 +7,29 @@
 </head>
 <body>
     <header>
-        <nav>
-            <a href="{% url 'inicio' %}">Inicio</a>
-            <a href="{% url 'arbol_lista' %}">arboles</a>
-            <a href="{% url 'alcorque_lista' %}">alcorques</a>
-            <a href="{% url 'incidencia_lista' %}">incidencias</a>
-            <a href="{% url 'nueva_incidencia' %}">nueva incidencia</a>
-            {% if user.is_authenticated %}
-                <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <button type="submit">logout</button>
-                </form>
-            {% else %}
-                <a href="{% url 'login' %}">login</a>
-            {% endif %}
+        <nav style="background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #dee2e6;">
+            <div style="max-width:1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <a href="{% url 'inicio' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Inicio</a>
+                    <a href="{% url 'arbol_lista' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Arboles</a>
+                    <a href="{% url 'alcorque_lista' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Alcorques</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'nueva_incidencia' %}" style="margin-right: 20px; text-decoration: none; color: black; font-weight: bold;">Nueva incidencia</a>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if user.is_authenticated %}
+                    <span style="margin-right: 15px; color: #666"> {{ user.name }}</span>
+                    <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" style="background-color: #a54b54; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer;">Cerrar sesión</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" style="margin-right: 15px; text-decoration: none; color: #007bff; font-weight: bold;">Iniciar sesión</a>
+                    <a href="{% url 'signup' %}" style="background-color: #56ab6a; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none">Registrarse</a>
+                {% endif %}
+                </div>
+            </div>
         </nav>
     </header>
 

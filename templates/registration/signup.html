@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto;">
+    <h1>Crear cuenta</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 10px; margin: 10px 0; border-radius: 4px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="{{ form.nombre.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">{{ form.nombre.label }}</label>
+            {{ form.nombre}}
+            {% if form.nombre.errors %}
+                <div style="color: red; font-size: 0.9em;">{{ form.nombre.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="{{ form.correo.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">{{ form.correo.label }}</label>
+            {{ form.correo}}
+            {% if form.correo.errors %}
+                <div style="color: red; font-size: 0.9em;">{{ form.correo.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="{{ form.password.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">{{ form.password.label }}</label>
+            {{ form.password}}
+            {% if form.password.errors %}
+                <div style="color: red; font-size: 0.9em;">{{ form.password.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="{{ form.password_confirm.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold;">{{ form.password_confirm.label }}</label>
+            {{ form.password_confirm}}
+            {% if form.password_confirm.errors %}
+                <div style="color: red; font-size: 0.9em;">{{ form.password_confirm.errors.0 }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div>
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em">Registrarse</button>
+    </form>
+
+    <p style="margin-top: 20px; text-align: center;">
+        ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
+    </p>
+</div>
+{% endblock %}

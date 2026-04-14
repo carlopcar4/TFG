@@ -1,26 +1,33 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 50px auto;">
     <h1>Iniciar sesión</h1>
-
-    {% if form.errors %}
-        <p style="color: red;">Credenciales incorrectas</p>
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 10px; margin: 10px 0; border-radius: 4px;">
+                {{ message }}
+            </div>
+        {% endfor %}
     {% endif %}
 
-    {% if next %}
-        <p>Vas a acceder a una zona protegida</p>
-    {% endif %}
-
-    <form method="post">
+    <form method="post" style="border: 1px solid #ccc; padding: 20px; border-radius: 8px;">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Entrar</button>
-        <input type="hidden" name="next" value="{{ next }}">
+        <div style="margin-bottom: 15px;">
+            <label for="correo" style="display: block; margin-bottom: 5px; font-weight: bold;">Correo electrónico</label>
+            <input type="email" name="correo" id="correo" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="password" style="display: block; margin-bottom: 5px; font-weight: bold;">Contraseña</label>
+            <input type="password" name="password" id="password" required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        </div>
+
+        <button type="submit" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em">Entrar</button>
     </form>
-</body>
-</html>
+
+    <p style="margin-top: 20px; text-align: center;">
+        ¿No tienes cuenta? <a href="{% url 'signup' %}">Regístrate aquí</a>
+    </p>
+</div>
+{% endblock %}

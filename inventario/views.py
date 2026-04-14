@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import Arbol, Alcorque, Barrio, Especie
+from django.contrib.auth.decorators import login_required
 
 def arbol_lista(request):
     q = request.GET.get("q", "").strip()
@@ -10,7 +11,6 @@ def arbol_lista(request):
 
     qs = Arbol.objects.select_related("especie", "barrio").all()
 
-# Buscar por dirección
     if q:
         qs = qs.filter(
 			Q(direccion__icontains=q)
@@ -34,7 +34,7 @@ def arbol_lista(request):
 		"q": q,
 		"estado": estado,
 		"barrio_id": barrio_id,
-		"especei_id": especie_id,
+		"especie_id": especie_id,
 		"especies": Especie.objects.order_by("nombre_comun"),
 		"barrios": Barrio.objects.order_by("nombre"),
 		"estados": Arbol.Estado.choices,
@@ -51,7 +51,6 @@ def alcorque_lista(request):
 
     qs = Alcorque.objects.select_related("barrio").all()
 
-# Buscar por dirección
     if q:
         qs = qs.filter(Q(direccion__icontains=q) | Q(barrio__nombre__icontains=q))
 
@@ -78,9 +77,15 @@ def alcorque_lista(request):
 
 def arbol_detalle(request, pk):
     arbol = get_object_or_404(Arbol.objects.select_related("especie", "barrio"), pk=pk)
-    return render(request, "inventario/arbol_detalle.html", {"arbol": arbol})
+    incidencias = []
+    if request.user.is_authenticated:
+        incidencias = arbol.arbol_inci.select_related("usuario", "admin_resp").order_by("-fecha_reporte")
+    return render(request, "inventario/arbol_detalle.html", {"arbol": arbol, "incidencias": incidencias,})
 
 
 def alcorque_detalle(request, pk):
     alcorque = get_object_or_404(Alcorque.objects.select_related("barrio"), pk=pk)
-    return render(request, "inventario/alcorque_detalle.html", {"alcorque": alcorque})
+    incidencias = []
+    if request.user.is_authenticated:
+        incidencias = alcorque.alcorque_inci.select_related("usuario", "admin_resp").order_by("-fecha_reporte")
+    return render(request, "inventario/alcorque_detalle.html", {"alcorque": alcorque, "incidencias": incidencias,})

@@ -59,7 +59,7 @@
                 <td>{{ a.direccion|default:"-" }}</td>
                 <td>{{ a.latitud|default:"-" }}</td>
                 <td>{{ a.longitud|default:"-" }}</td>
-                <td>{{ a.fecha_plant|date:"Y-m-d H:i"|default:"-" }}</td>
+                <td>{{ a.fecha_plant|date:"Y-m-d"|default:"-" }}</td>
                 <td>{{ a.observaciones|default:"-" }}</td>
             </tr>
             {% empty %}
