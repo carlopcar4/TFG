@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Mi perfil - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+    <h1>Mi Perfil</h1>
+    
+    <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 25px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 1.5em;">{{ usuario.nombre }}</h2>
+            <a href="{% url 'editar_perfil' %}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+                Editar perfil
+            </a>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <p style="margin: 0 0 5px 0; color: #666;"><strong>Correo:</strong></p>
+                <p style="margin: 0 0 20px 0; font-family: monospace;">{{ usuario.correo }}</p>
+                
+                <p style="margin: 0 0 5px 0; color: #666;"><strong>Rol:</strong></p>
+                <p style="margin: 0 0 20px 0;">
+                    {% if usuario.es_admin %}
+                        <span style="background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 3px; font-weight: bold;">
+                            Administrador
+                        </span>
+                    {% else %}
+                        <span style="background-color: #e3f2fd; color: #1565c0; padding: 4px 8px; border-radius: 3px;">
+                            Registrado
+                        </span>
+                    {% endif %}
+                </p>
+                
+                <p style="margin: 0 0 5px 0; color: #666;"><strong>Estado de cuenta:</strong></p>
+                <p style="margin: 0;">
+                    {% if usuario.estado_cuenta == 'ACTIVA' %}
+                        <span style="background-color: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 3px; font-weight: bold;">
+                            ✓ Activa
+                        </span>
+                    {% elif usuario.estado_cuenta == 'PENDIENTE_ELIMINACION' %}
+                        <span style="background-color: #fff3e0; color: #e65100; padding: 4px 8px; border-radius: 3px; font-weight: bold;">
+                            ⏳ Pendiente de eliminación
+                        </span>
+                    {% else %}
+                        <span style="background-color: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 3px; font-weight: bold;">
+                            ✗ Eliminada
+                        </span>
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div>
+                <p style="margin: 0 0 5px 0; color: #666;"><strong>Fecha de registro:</strong></p>
+                <p style="margin: 0 0 20px 0;">{{ usuario.fecha_registro|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    {% if usuario.estado_cuenta == 'ACTIVA' %}
+        {% if solicitud_baja %}
+            <div style="background-color: #fff3e0; border-left: 4px solid #fbc02d; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+                <p style="margin: 0 0 10px 0;"><strong>Solicitud de baja en proceso:</strong></p>
+                <p style="margin: 0 0 5px 0;">Estado: <span style="font-weight: bold;">{{ solicitud_baja.get_estado_display }}</span></p>
+                <p style="margin: 0 0 5px 0;">Fecha de solicitud: {{ solicitud_baja.fecha_solicitud|date:"d/m/Y H:i" }}</p>
+                {% if solicitud_baja.comentario_admin %}
+                    <p style="margin: 10px 0 0 0; padding-top: 10px; border-top: 1px solid #f9a825;">
+                        <strong>Comentarios del administrador:</strong><br>
+                        {{ solicitud_baja.comentario_admin }}
+                    </p>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="background-color: #e8f5e9; border-left: 4px solid #56ab6a; border-radius: 5px; padding: 20px;">
+                <p style="margin: 0 0 15px 0;"><strong>¿Deseas darte de baja?</strong></p>
+                <p style="margin: 0 0 15px 0; color: #333;">
+                    Si no deseas continuar usando esta aplicación, puedes solicitar la baja de tu cuenta. 
+                    Un administrador revisará tu solicitud y la procesará.
+                </p>
+                <a href="{% url 'solicitar_baja' %}" style="background-color: #a54b54; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                    Solicitar baja de cuenta
+                </a>
+            </div>
+        {% endif %}
+    {% elif usuario.estado_cuenta == 'PENDIENTE_ELIMINACION' %}
+        <div style="background-color: #fff3e0; border-left: 4px solid #fbc02d; border-radius: 5px; padding: 20px;">
+            <p style="margin: 0;"><strong>Tu cuenta está pendiente de eliminación.</strong> El equipo administrativo completará el proceso de eliminación en breve.</p>
+        </div>
+    {% else %}
+        <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; border-radius: 5px; padding: 20px;">
+            <p style="margin: 0;"><strong>Tu cuenta ha sido eliminada.</strong> Ya no tienes acceso a la aplicación.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

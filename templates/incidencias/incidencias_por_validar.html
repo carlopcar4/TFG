@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Incidencias por validar - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">Incidencias por validar (CU04)</h1>
+        <a href="{% url 'incidencia_lista' %}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+            Ver todas las incidencias
+        </a>
+    </div>
+    
+    <div style="background-color: #e3f2fd; border-left: 4px solid #1976d2; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <p style="margin: 0;"><strong>Panel de validación:</strong> Aquí se muestran todas las incidencias abiertas que requieren revisión y validación por parte del equipo administrativo.</p>
+    </div>
+    
+    {% if incidencias %}
+        <div style="display: grid; gap: 20px;">
+            {% for inc in incidencias %}
+                <div style="border: 1px solid #ddd; border-radius: 5px; padding: 15px; background-color: white; display: flex; justify-content: space-between; align-items: center; gap: 20px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">{{ inc.titulo }}</h3>
+                            <span style="display: inline-block; padding: 4px 8px; border-radius: 3px; font-size: 0.9em; background-color: #e3f2fd; color: #1565c0; font-weight: bold;">
+                                {{ inc.get_grado_incidencia_display }}
+                            </span>
+                        </div>
+                        
+                        <p style="margin: 5px 0; color: #666; font-size: 0.9em;">
+                            <strong>Reportada por:</strong> {{ inc.usuario.nombre }} - <strong>ID:</strong> #{{ inc.id }} - <strong>Fecha:</strong> {{ inc.fecha_reporte|date:"d/m/Y H:i" }}
+                        </p>
+                        
+                        <p style="margin: 5px 0; color: #555;">{{ inc.descripcion|truncatewords:20 }}</p>
+                        
+                        <p style="margin: 10px 0 5px 0; font-size: 0.9em;">
+                            <strong>Elemento:</strong>
+                            {% if inc.arbol %}
+                                Árbol #{{ inc.arbol.id }} ({{ inc.arbol.especie.nombre_comun }}, {{ inc.arbol.barrio.nombre }})
+                            {% elif inc.alcorque %}
+                                Alcorque #{{ inc.alcorque.id }} ({{ inc.alcorque.barrio.nombre }})
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div style="flex-shrink: 0;">
+                        {% if inc.foto %}
+                            <div style="margin-bottom: 10px;">
+                                <img src="{{ inc.foto.url }}" alt="{{ inc.titulo }}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 4px;">
+                            </div>
+                        {% endif %}
+                        <a href="{% url 'incidencia_detalle' inc.pk %}" style="background-color: #56ab6a; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; display: inline-block; white-space: nowrap;">
+                            Revisar y validar
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="background-color: #f0f0f0; padding: 40px; text-align: center; border-radius: 5px;">
+            <p style="font-size: 1.1em; color: #666; margin: 0;">✓ No hay incidencias pendientes de validación</p>
+            <p style="color: #999; margin-top: 10px;">Todas las incidencias abiertas han sido revisadas.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

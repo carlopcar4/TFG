@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Incidencias por zona - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 30px auto; padding: 20px;">
+    <h1>Incidencias por zona/barrio</h1>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+        <h3>Filtrar</h3>
+        <form method="GET" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+            <div>
+                <label for="q">Búsqueda (título, descripción):</label>
+                <input type="text" id="q" name="q" value="{{ q }}" placeholder="Buscar..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div>
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                    <option value="">-- Todos --</option>
+                    {% for value, label in estados %}
+                        <option value="{{ value }}" {% if estado == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display: flex; align-items: flex-end;">
+                <button type="submit" style="background-color: #007bff; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%;">Filtrar</button>
+            </div>
+        </form>
+    </div>
+    
+    {% if barrios_agrupados %}
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for item in barrios_agrupados %}
+                <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; overflow: hidden;">
+                    <!-- Header del barrio -->
+                    <div style="background-color: #f0f4ff; padding: 15px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd;" onclick="document.getElementById('barrio-{{ forloop.counter }}').style.display = document.getElementById('barrio-{{ forloop.counter }}').style.display === 'none' ? 'block' : 'none'; this.style.backgroundColor = document.getElementById('barrio-{{ forloop.counter }}').style.display === 'none' ? '#f0f4ff' : '#e3f2fd';">
+                        <div>
+                            <h3 style="margin: 0; color: #1565c0; font-size: 18px;">{{ item.barrio.nombre }}</h3>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+                                <strong>Total:</strong> {{ item.conteos.total }} incidencias
+                                <span style="margin-left: 15px; color: #d32f2f;">🔴 ABIERTA: {{ item.conteos.abierta }}</span>
+                                <span style="margin-left: 10px; color: #ff9800;">🟡 EN PROCESO: {{ item.conteos.en_proceso }}</span>
+                                <span style="margin-left: 10px; color: #4caf50;">🟢 CERRADA: {{ item.conteos.cerrada }}</span>
+                            </p>
+                        </div>
+                        <span style="font-size: 24px; color: #999;" id="arrow-{{ forloop.counter }}">▼</span>
+                    </div>
+                    
+                    <!-- Contenido colapsible -->
+                    <div id="barrio-{{ forloop.counter }}" style="padding: 15px; display: block;">
+                        {% if item.incidencias %}
+                            <div style="display: grid; gap: 10px;">
+                                {% for incidencia in item.incidencias %}
+                                    <div style="background-color: white; border: 1px solid #eee; border-radius: 4px; padding: 12px; border-left: 4px solid {% if incidencia.estado == 'ABIERTA' %}#d32f2f{% elif incidencia.estado == 'EN_PROCESO' %}#ff9800{% else %}#4caf50{% endif %};">
+                                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                                            <div style="flex: 1;">
+                                                <a href="{% url 'incidencia_detalle' incidencia.pk %}" style="color: #007bff; text-decoration: none; font-weight: bold; font-size: 15px;">{{ incidencia.titulo }}</a>
+                                                <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                                    <strong>ID:</strong> #{{ incidencia.id }} | 
+                                                    <strong>Reportado por:</strong> {{ incidencia.usuario.nombre }} | 
+                                                    <strong>Fecha:</strong> {{ incidencia.fecha_reporte|date:"d/m/Y H:i" }}
+                                                </p>
+                                                <p style="margin: 5px 0; color: #555; font-size: 14px;">{{ incidencia.descripcion|truncatewords:20 }}</p>
+                                                <p style="margin: 8px 0 0 0;">
+                                                    <span style="display: inline-block; background-color: {% if incidencia.estado == 'ABIERTA' %}#ffebee{% elif incidencia.estado == 'EN_PROCESO' %}#fff3e0{% else %}#e8f5e9{% endif %}; padding: 4px 8px; border-radius: 3px; font-size: 13px; font-weight: bold;">
+                                                        {{ incidencia.get_estado_display }}
+                                                    </span>
+                                                    {% if incidencia.grado_incidencia %}
+                                                        <span style="margin-left: 10px; display: inline-block; background-color: {% if incidencia.grado_incidencia == 'LEVE' %}#e8f5e9{% elif incidencia.grado_incidencia == 'MEDIO' %}#fff3e0{% else %}#ffebee{% endif %}; padding: 4px 8px; border-radius: 3px; font-size: 13px; font-weight: bold;">
+                                                            Grado: {{ incidencia.get_grado_incidencia_display }}
+                                                        </span>
+                                                    {% endif %}
+                                                </p>
+                                                {% if incidencia.arbol %}
+                                                    <p style="margin: 8px 0 0 0; color: #666; font-size: 13px;">
+                                                        <strong>Elemento:</strong> Árbol #{{ incidencia.arbol.id }} ({{ incidencia.arbol.especie.nombre_comun }})
+                                                    </p>
+                                                {% elif incidencia.alcorque %}
+                                                    <p style="margin: 8px 0 0 0; color: #666; font-size: 13px;">
+                                                        <strong>Elemento:</strong> Alcorque #{{ incidencia.alcorque.id }}
+                                                    </p>
+                                                {% endif %}
+                                            </div>
+                                            <a href="{% url 'incidencia_detalle' incidencia.pk %}" style="background-color: #007bff; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; display: inline-block; font-size: 13px; margin-left: 10px; white-space: nowrap;">Ver detalles</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p style="color: #999; font-style: italic;">No hay incidencias en este barrio.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; border-radius: 5px; text-align: center;">
+            <p>No se encontraron incidencias que coincidan con los filtros seleccionados.</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'incidencia_lista' %}" style="background-color: #999; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; display: inline-block;">← Volver a lista de incidencias</a>
+    </div>
+</div>
+
+<script>
+// Script para colapsar/expandir barrios
+document.addEventListener('DOMContentLoaded', function() {
+    const headers = document.querySelectorAll('[onclick*="barrio-"]');
+    headers.forEach(function(header) {
+        header.addEventListener('click', function() {
+            const match = this.getAttribute('onclick').match(/barrio-(\d+)/);
+            if (match) {
+                const id = match[1];
+                const content = document.getElementById('barrio-' + id);
+                const arrow = document.getElementById('arrow-' + id);
+                
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    arrow.textContent = '▼';
+                    this.style.backgroundColor = '#e3f2fd';
+                } else {
+                    content.style.display = 'none';
+                    arrow.textContent = '▶';
+                    this.style.backgroundColor = '#f0f4ff';
+                }
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

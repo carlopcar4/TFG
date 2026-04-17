@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Alcorque #{{ alcorque.id }} - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+        <div>
+            <h1>Alcorque #{{ alcorque.id }}</h1>
+            <p style="font-size: 16px; color: #666;">{{ alcorque.barrio.nombre }}</p>
+        </div>
+        {% if user.es_admin %}
+            <div>
+                <a href="{% url 'alcorque_editar' alcorque.pk %}" style="background-color: #2196F3; color: white; padding: 8px 15px; border-radius: 4px; text-decoration: none; display: inline-block;">✏️ Editar</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div>
+                <h3 style="color: #555; margin-bottom: 10px;">Información básica</h3>
+                <p><strong>ID:</strong> {{ alcorque.id }}</p>
+                <p><strong>Barrio:</strong> {{ alcorque.barrio.nombre }}</p>
+                <p><strong>Estado:</strong> <span style="background-color: {% if alcorque.estado == 'BUENO' %}#d4edda{% elif alcorque.estado == 'REGULAR' %}#fff3cd{% elif alcorque.estado == 'MALO' %}#f8d7da{% else %}#d1ecf1{% endif %}; padding: 5px 10px; border-radius: 3px;">{{ alcorque.get_estado_display }}</span></p>
+                <p><strong>Potencial de plantación:</strong> <span style="background-color: {% if alcorque.potencial_plant == 'APTO' %}#d4edda{% else %}#f8d7da{% endif %}; padding: 5px 10px; border-radius: 3px;">{{ alcorque.get_potencial_plant_display }}</span></p>
+            </div>
+            
+            <div>
+                <h3 style="color: #555; margin-bottom: 10px;">Ubicación</h3>
+                {% if alcorque.direccion %}
+                    <p><strong>Dirección:</strong> {{ alcorque.direccion }}</p>
+                {% else %}
+                    <p><em>Sin dirección registrada</em></p>
+                {% endif %}
+                {% if alcorque.latitud and alcorque.longitud %}
+                    <p><strong>Coordenadas:</strong><br/>Latitud: {{ alcorque.latitud }}<br/>Longitud: {{ alcorque.longitud }}</p>
+                {% else %}
+                    <p><em>Sin coordenadas registradas</em></p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <h3 style="color: #555; margin-bottom: 10px;">Observaciones</h3>
+                {% if alcorque.observaciones %}
+                    <p>{{ alcorque.observaciones }}</p>
+                {% else %}
+                    <p><em>Sin observaciones registradas</em></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    {% if incidencias %}
+        <div style="background-color: #fff3cd; padding: 20px; border-radius: 5px; border-left: 4px solid #ffc107;">
+            <h2>Incidencias reportadas</h2>
+            <div style="margin-top: 15px;">
+                {% for incidencia in incidencias %}
+                    <div style="background-color: white; padding: 15px; margin-bottom: 10px; border-radius: 3px; border-left: 4px solid {% if incidencia.estado == 'ABIERTA' %}#d32f2f{% elif incidencia.estado == 'EN_PROCESO' %}#ff9800{% elif incidencia.estado == 'RESUELTA' %}#4caf50{% else %}#2196f3{% endif %};">
+                        <p><strong>{{ incidencia.titulo }}</strong> - <span style="color: #666; font-size: 14px;">{{ incidencia.fecha_reporte|date:"d/m/Y H:i" }}</span></p>
+                        <p style="color: #555; font-size: 14px; margin: 5px 0;">{{ incidencia.descripcion|truncatewords:30 }}</p>
+                        <p style="margin: 5px 0;"><strong>Estado:</strong> <span style="background-color: {% if incidencia.estado == 'ABIERTA' %}#ffebee{% elif incidencia.estado == 'EN_PROCESO' %}#fff3e0{% elif incidencia.estado == 'RESUELTA' %}#e8f5e9{% else %}#e3f2fd{% endif %}; padding: 3px 8px; border-radius: 3px; font-size: 14px;">{{ incidencia.get_estado_display }}</span></p>
+                        <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Reportada por:</strong> {{ incidencia.usuario.nombre }}</p>
+                        {% if incidencia.grado_incidencia %}
+                            <p style="margin: 5px 0; color: #666; font-size: 14px;"><strong>Grado:</strong> {{ incidencia.get_grado_incidencia_display }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 5px;">
+            <p>No hay incidencias reportadas para este alcorque.</p>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 20px;">
+        <a href="{% url 'alcorque_lista' %}" style="background-color: #999; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; display: inline-block;">← Volver a la lista</a>
+    </div>
+</div>
+{% endblock %}

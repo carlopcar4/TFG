@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ accion }} alcorque - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+    <h1>{{ accion }} alcorque</h1>
+    
+    <form method="POST" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin-bottom: 20px;">
+                {% for error in form.non_field_errors %}
+                    <p style="color: #d32f2f;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        {% for field in form %}
+            <div style="margin-bottom: 15px;">
+                <label for="id_{{ field.name }}" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ field.label }}</label>
+                {% if field.errors %}
+                    <div style="color: #d32f2f; margin-bottom: 5px;">
+                        {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if field.widget.input_type == "textarea" %}
+                    {{ field }}
+                    <style>
+                        #id_{{ field.name }} {
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            box-sizing: border-box;
+                            font-family: Arial, sans-serif;
+                        }
+                    </style>
+                {% else %}
+                    {{ field }}
+                    <style>
+                        #id_{{ field.name }} {
+                            width: 100%;
+                            padding: 8px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            box-sizing: border-box;
+                        }
+                    </style>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #56ab6a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
+            <a href="{% if alcorque %}{% url 'alcorque_detalle' alcorque.pk %}{% else %}{% url 'alcorque_lista' %}{% endif %}" style="background-color: #999; color: white; padding: 10px 20px; border: none; border-radius: 4px; text-decoration: none; display: inline-block;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

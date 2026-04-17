@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle de incidencia - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">{{ incidencia.titulo }}</h1>
+        <a href="{% url 'incidencia_lista' %}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+            Volver a mis incidencias
+        </a>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 20px;">
+        <div>
+            <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+                <p style="margin: 0 0 10px 0; color: #666;"><strong>Incidencia #{{ incidencia.id }}</strong></p>
+                <p style="margin: 0 0 5px 0; color: #666; font-size: 0.9em;">Reportada el {{ incidencia.fecha_reporte|date:"d/m/Y H:i" }}</p>
+                {% if incidencia.fecha_act %}
+                    <p style="margin: 0; color: #666; font-size: 0.9em;">Actualizada el {{ incidencia.fecha_act|date:"d/m/Y H:i" }}</p>
+                {% endif %}
+            </div>
+            
+            <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 10px 0;">Información</h3>
+                
+                <p style="margin: 10px 0 5px 0;"><strong>Estado:</strong></p>
+                <span style="display: inline-block; padding: 6px 10px; border-radius: 3px; font-weight: bold;
+                    {% if incidencia.estado == 'ABIERTA' %}
+                        background-color: #e3f2fd; color: #1565c0;
+                    {% elif incidencia.estado == 'EN_PROCESO' %}
+                        background-color: #fff3e0; color: #e65100;
+                    {% else %}
+                        background-color: #e8f5e9; color: #2e7d32;
+                    {% endif %}
+                ">{{ incidencia.get_estado_display }}</span>
+                
+                <p style="margin: 15px 0 5px 0;"><strong>Grado de incidencia:</strong></p>
+                <span style="display: inline-block; padding: 6px 10px; border-radius: 3px; font-weight: bold;
+                    {% if incidencia.grado_incidencia == 'LEVE' %}
+                        background-color: #e8f5e9; color: #2e7d32;
+                    {% elif incidencia.grado_incidencia == 'MEDIO' %}
+                        background-color: #fff3e0; color: #e65100;
+                    {% else %}
+                        background-color: #ffebee; color: #c62828;
+                    {% endif %}
+                ">{{ incidencia.get_grado_incidencia_display }}</span>
+                
+                <p style="margin: 15px 0 5px 0;"><strong>Reportada por:</strong></p>
+                <p style="margin: 0;">{{ incidencia.usuario.nombre }} ({{ incidencia.usuario.correo }})</p>
+                
+                <p style="margin: 15px 0 5px 0;"><strong>Elemento asociado:</strong></p>
+                {% if incidencia.arbol %}
+                    <p style="margin: 0;">
+                        <strong>Árbol #{{ incidencia.arbol.id }}</strong><br>
+                        Especie: {{ incidencia.arbol.especie.nombre_comun }}<br>
+                        Barrio: {{ incidencia.arbol.barrio.nombre }}<br>
+                        Estado: {{ incidencia.arbol.get_estado_display }}<br>
+                        {% if incidencia.arbol.direccion %}
+                            Dirección: {{ incidencia.arbol.direccion }}<br>
+                        {% endif %}
+                        {% if incidencia.arbol.latitud and incidencia.arbol.longitud %}
+                            Ubicación: {{ incidencia.arbol.latitud }}, {{ incidencia.arbol.longitud }}
+                        {% endif %}
+                    </p>
+                {% elif incidencia.alcorque %}
+                    <p style="margin: 0;">
+                        <strong>Alcorque #{{ incidencia.alcorque.id }}</strong><br>
+                        Barrio: {{ incidencia.alcorque.barrio.nombre }}<br>
+                        Estado: {{ incidencia.alcorque.get_estado_display }}<br>
+                        Potencial: {{ incidencia.alcorque.get_potencial_plant_display }}<br>
+                        {% if incidencia.alcorque.direccion %}
+                            Dirección: {{ incidencia.alcorque.direccion }}<br>
+                        {% endif %}
+                        {% if incidencia.alcorque.latitud and incidencia.alcorque.longitud %}
+                            Ubicación: {{ incidencia.alcorque.latitud }}, {{ incidencia.alcorque.longitud }}
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+            
+            <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+                <h3 style="margin: 0 0 15px 0;">Descripción</h3>
+                <p style="margin: 0; line-height: 1.6;">{{ incidencia.descripcion }}</p>
+            </div>
+            
+            {% if es_admin %}
+                <div style="background-color: #fff8e1; border-left: 4px solid #fbc02d; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 10px 0;">Observaciones internas (solo administradores)</h3>
+                    {% if incidencia.observaciones_internas %}
+                        <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">{{ incidencia.observaciones_internas }}</p>
+                    {% else %}
+                        <p style="margin: 0; color: #999; font-style: italic;">No hay observaciones internas aún</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            {% if es_admin %}
+                <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 20px;">
+                    <h3 style="margin: 0 0 15px 0;">Gestión administrativa</h3>
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="id_estado" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.estado.label }}</label>
+                            {{ form.estado }}
+                            <style>
+                                #id_estado {
+                                    width: 100%;
+                                    padding: 8px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    box-sizing: border-box;
+                                }
+                            </style>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="id_admin_resp" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.admin_resp.label }}</label>
+                            {{ form.admin_resp }}
+                            <style>
+                                #id_admin_resp {
+                                    width: 100%;
+                                    padding: 8px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    box-sizing: border-box;
+                                }
+                            </style>
+                        </div>
+                        
+                        <div style="margin-bottom: 15px;">
+                            <label for="id_observaciones_internas" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.observaciones_internas.label }}</label>
+                            {{ form.observaciones_internas }}
+                            <style>
+                                #id_observaciones_internas {
+                                    width: 100%;
+                                    padding: 8px;
+                                    border: 1px solid #ccc;
+                                    border-radius: 4px;
+                                    box-sizing: border-box;
+                                    font-family: Arial, sans-serif;
+                                }
+                            </style>
+                        </div>
+                        
+                        <button type="submit" style="background-color: #56ab6a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                            Guardar cambios
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                {% if incidencia.admin_resp %}
+                    <div style="background-color: #e8f5e9; border-left: 4px solid #56ab6a; padding: 15px; border-radius: 5px;">
+                        <p style="margin: 0;"><strong>Responsable asignado:</strong> {{ incidencia.admin_resp.nombre }}</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        
+        <div>
+            {% if incidencia.foto %}
+                <div style="background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1em;">Fotografía</h3>
+                    <img src="{{ incidencia.foto.url }}" alt="{{ incidencia.titulo }}" style="width: 100%; border-radius: 4px;">
+                    {% if user == incidencia.usuario %}
+                        <div style="margin-top: 10px;">
+                            <a href="{% url 'incidencia_editar_foto' incidencia.pk %}" style="background-color: #2196F3; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; display: inline-block; font-size: 14px;">📷 Editar evidencia</a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% elif user == incidencia.usuario %}
+                <div style="background-color: #fff9c4; border: 1px solid #f9a825; border-radius: 5px; padding: 15px; margin-bottom: 20px;">
+                    <p style="margin: 0 0 10px 0; font-weight: bold;">Sin evidencia</p>
+                    <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Puedes añadir una fotografía para adjuntar al reporte.</p>
+                    <a href="{% url 'incidencia_editar_foto' incidencia.pk %}" style="background-color: #2196F3; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; display: inline-block; font-size: 14px;">📷 Añadir evidencia</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

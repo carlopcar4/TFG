@@ -1,7 +1,9 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from .models import Arbol, Alcorque, Barrio, Especie
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import ArbolForm, AlcorqueForm
 
 def arbol_lista(request):
     q = request.GET.get("q", "").strip()
@@ -89,3 +91,83 @@ def alcorque_detalle(request, pk):
     if request.user.is_authenticated:
         incidencias = alcorque.alcorque_inci.select_related("usuario", "admin_resp").order_by("-fecha_reporte")
     return render(request, "inventario/alcorque_detalle.html", {"alcorque": alcorque, "incidencias": incidencias,})
+
+
+@login_required
+def arbol_crear(request):
+    """Crear nuevo árbol - solo administradores (CU15)"""
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden crear árboles")
+        return redirect("arbol_lista")
+    
+    if request.method == "POST":
+        form = ArbolForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Árbol creado exitosamente")
+            return redirect("arbol_lista")
+    else:
+        form = ArbolForm()
+    
+    return render(request, "inventario/arbol_form.html", {"form": form, "accion": "Crear"})
+
+
+@login_required
+def arbol_editar(request, pk):
+    """Editar árbol existente - solo administradores (CU15)"""
+    arbol = get_object_or_404(Arbol, pk=pk)
+    
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden editar árboles")
+        return redirect("arbol_detalle", pk=pk)
+    
+    if request.method == "POST":
+        form = ArbolForm(request.POST, instance=arbol)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Árbol actualizado exitosamente")
+            return redirect("arbol_detalle", pk=arbol.pk)
+    else:
+        form = ArbolForm(instance=arbol)
+    
+    return render(request, "inventario/arbol_form.html", {"form": form, "accion": "Editar", "arbol": arbol})
+
+
+@login_required
+def alcorque_crear(request):
+    """Crear nuevo alcorque - solo administradores (CU15)"""
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden crear alcorques")
+        return redirect("alcorque_lista")
+    
+    if request.method == "POST":
+        form = AlcorqueForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Alcorque creado exitosamente")
+            return redirect("alcorque_lista")
+    else:
+        form = AlcorqueForm()
+    
+    return render(request, "inventario/alcorque_form.html", {"form": form, "accion": "Crear"})
+
+
+@login_required
+def alcorque_editar(request, pk):
+    """Editar alcorque existente - solo administradores (CU15 y CU24)"""
+    alcorque = get_object_or_404(Alcorque, pk=pk)
+    
+    if not request.user.es_admin:
+        messages.error(request, "Solo administradores pueden editar alcorques")
+        return redirect("alcorque_detalle", pk=pk)
+    
+    if request.method == "POST":
+        form = AlcorqueForm(request.POST, instance=alcorque)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Alcorque actualizado exitosamente")
+            return redirect("alcorque_detalle", pk=alcorque.pk)
+    else:
+        form = AlcorqueForm(instance=alcorque)
+    
+    return render(request, "inventario/alcorque_form.html", {"form": form, "accion": "Editar", "alcorque": alcorque})

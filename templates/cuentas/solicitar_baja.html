@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitar baja - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">Solicitar baja de cuenta</h1>
+        <a href="{% url 'perfil' %}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+            Volver
+        </a>
+    </div>
+    
+    <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; border-radius: 5px; padding: 20px; margin-bottom: 20px;">
+        <p style="margin: 0; color: #c62828;">
+            <strong>⚠ Acción irreversible:</strong> Al solicitar la baja de tu cuenta, un administrador revisará la solicitud. 
+            Una vez aprobada, tu cuenta será marcada como pendiente de eliminación y perderás acceso a la aplicación.
+        </p>
+    </div>
+    
+    <form method="POST" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_motivo" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.motivo.label }}</label>
+            {{ form.motivo }}
+            <small style="color: #666;">Ayúdanos a mejorar contándanos por qué deseas darte de baja</small>
+            <style>
+                #id_motivo {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                    font-family: Arial, sans-serif;
+                }
+            </style>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin-bottom: 15px; border-radius: 4px;">
+                {% for error in form.non_field_errors %}
+                    <p style="color: #d32f2f; margin: 0;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #a54b54; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Enviar solicitud de baja
+            </button>
+            <a href="{% url 'perfil' %}" style="background-color: #ccc; color: black; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

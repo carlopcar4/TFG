@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Editar evidencia - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 30px auto; padding: 20px;">
+    <h1>Editar evidencia</h1>
+    
+    <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+        <p><strong>Incidencia:</strong> {{ incidencia.titulo }}</p>
+        <p style="font-size: 14px; color: #666; margin-top: 5px;">Reportada el {{ incidencia.fecha_reporte|date:"d/m/Y H:i" }}</p>
+    </div>
+    
+    <form method="POST" enctype="multipart/form-data" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                {% for error in form.non_field_errors %}
+                    <p style="color: #d32f2f;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_foto" style="display: block; font-weight: bold; margin-bottom: 10px;">{{ form.foto.label }}</label>
+            {% if form.foto.errors %}
+                <div style="color: #d32f2f; margin-bottom: 10px;">
+                    {% for error in form.foto.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            {% if incidencia.foto %}
+                <div style="margin-bottom: 15px;">
+                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;"><strong>Evidencia actual:</strong></p>
+                    <img src="{{ incidencia.foto.url }}" style="max-width: 100%; max-height: 300px; border-radius: 5px; border: 1px solid #ddd;">
+                </div>
+            {% endif %}
+            
+            {{ form.foto }}
+            <style>
+                #id_foto {
+                    padding: 8px;
+                    border: 2px dashed #999;
+                    border-radius: 4px;
+                }
+            </style>
+            <p style="font-size: 13px; color: #999; margin-top: 10px;">Formatos aceptados: JPG, PNG. Tamaño máximo recomendado: 5MB</p>
+        </div>
+        
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #56ab6a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar evidencia</button>
+            <a href="{% url 'incidencia_detalle' incidencia.pk %}" style="background-color: #999; color: white; padding: 10px 20px; border: none; border-radius: 4px; text-decoration: none; display: inline-block;">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

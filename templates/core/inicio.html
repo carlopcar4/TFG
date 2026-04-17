@@ -3,42 +3,121 @@
 {% block title %}Inicio | Inventario arbolado de Sevilla{% endblock %}
 
 {% block content %}
-<div class="pagina-inicio">
-    <header class="cabecera-inicio">
-        <h1>Inventario arbolado de Sevilla</h1>
-    </header>
+<!-- HERO SECTION -->
+<div style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%); color: white; padding: 60px 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h1 style="font-size: 42px; font-weight: bold; margin: 0 0 15px 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">🌳 Inventario Arbolado de Sevilla</h1>
+    <p style="font-size: 18px; margin: 0; opacity: 0.95; max-width: 600px; margin-left: auto; margin-right: auto;">
+        Gestión integral de árboles y alcorques con seguimiento de incidencias en tiempo real
+    </p>
+</div>
 
-    <div class="contenido-principal">
-        <aside>
-            <h2>Sobre el proyecto</h2>
-            <p>Aplicación para consultar los árboles y alcorques de Sevilla y facilitar la comunicación de incidencias.
-            </p>
-
-            <h2>Resumen</h2>
-            <ul>
-                <li>Total de árboles: {{ total_arboles }}</li>
-                <li>Total de incidencias: {{ total_incidencia }}</li>
-            </ul>
-
-            <h3>Leyenda</h3>
-            <ul>
-                <li>Árbol en buen estado</li>
-                <li>Árbol en estado regular</li>
-                <li>Árbol en mal estado</li>
-                <li>Alcorque vacío</li>
-            </ul>
-
-            <h3>Filtros</h3>
-            <p>Aquí irán los filtros por itpo y estado</p>
-        </aside>
-
-        <section>
-            <h2>Mapa interactivo</h2>
-            <div id="mapa" style="height: 500px; width: 800px; border: 4px;">
-                Aquí irá OpenStreetMap
-            </div>
-        </section>
+<!-- ESTADÍSTICAS PRINCIPALES -->
+<div style="max-width: 1200px; margin: -30px auto 40px auto; padding: 0 20px; position: relative; z-index: 1;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <!-- Card Árboles -->
+        <div style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); text-align: center; transform: translateY(0); transition: transform 0.3s;">
+            <h3 style="font-size: 36px; margin: 0 0 8px 0;">🌲</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 0;">{{ total_arboles }}</p>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Árboles inventariados</p>
+        </div>
+        
+        <!-- Card Alcorques -->
+        <div style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); text-align: center;">
+            <h3 style="font-size: 36px; margin: 0 0 8px 0;">🔲</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 0;">{{ alcorques_count|default:0 }}</p>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Alcorques registrados</p>
+        </div>
+        
+        <!-- Card Incidencias -->
+        <div style="background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); text-align: center;">
+            <h3 style="font-size: 36px; margin: 0 0 8px 0;">⚠️</h3>
+            <p style="font-size: 32px; font-weight: bold; margin: 0;">{{ total_incidencia }}</p>
+            <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 14px;">Incidencias reportadas</p>
+        </div>
     </div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<div style="max-width: 1200px; margin: 0 auto; padding: 20px; display: grid; grid-template-columns: 1fr 350px; gap: 30px;">
+    
+    <!-- MAPA -->
+    <section style="background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+        <div style="background-color: #f5f5f5; padding: 20px; border-bottom: 2px solid #e0e0e0;">
+            <h2 style="margin: 0; color: #1565c0; font-size: 22px;">📍 Mapa Interactivo</h2>
+            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Visualiza la ubicación de todos los árboles y alcorques</p>
+        </div>
+        <div id="mapa" style="height: 600px; width: 100%;"></div>
+    </section>
+    
+    <!-- SIDEBAR -->
+    <aside style="display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- ACCIONES RÁPIDAS -->
+        <div style="background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; color: #1565c0; font-size: 16px; border-bottom: 2px solid #e3f2fd; padding-bottom: 10px;">🚀 Acciones Rápidas</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{% url 'nueva_incidencia' %}" style="background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%); color: white; padding: 12px 15px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; transition: all 0.3s;">
+                    ➕ Reportar Incidencia
+                </a>
+                <a href="{% url 'arbol_lista' %}" style="background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); color: white; padding: 12px 15px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; transition: all 0.3s;">
+                    🌲 Ver Árboles
+                </a>
+                <a href="{% url 'incidencia_lista' %}" style="background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%); color: white; padding: 12px 15px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; transition: all 0.3s;">
+                    📋 Mis Incidencias
+                </a>
+            </div>
+        </div>
+        
+        <!-- INFORMACIÓN -->
+        <div style="background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; color: #1565c0; font-size: 16px; border-bottom: 2px solid #e3f2fd; padding-bottom: 10px;">ℹ️ Sobre el Proyecto</h3>
+            <p style="margin: 0; color: #555; font-size: 13px; line-height: 1.6;">
+                Plataforma digital para gestionar y monitorizar el arbolado de Sevilla. Permite reportar incidencias y acceder al inventario completo de árboles y alcorques.
+            </p>
+        </div>
+        
+        <!-- LEYENDA -->
+        <div style="background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; color: #1565c0; font-size: 16px; border-bottom: 2px solid #e3f2fd; padding-bottom: 10px;">🎨 Leyenda del Mapa</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 16px; height: 16px; background-color: #4caf50; border-radius: 50%; border: 2px solid #2e7d32;"></div>
+                    <span>Árbol inventariado</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 16px; height: 16px; background-color: #ff9800; border-radius: 50%; border: 2px solid #e65100;"></div>
+                    <span>Alcorque (vacío/disponible)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 14px;">Click en marcador para más info</span>
+                </div>
+            </div>
+        </div>
+        
+        {% if user.es_admin %}
+        <!-- ADMIN PANEL -->
+        <div style="background: linear-gradient(135deg, #ffd54f 0%, #ffb300 100%); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px; border-bottom: 2px solid #ffa000; padding-bottom: 10px;">👨‍💼 Panel Admin</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="{% url 'incidencias_por_validar' %}" style="background: white; color: #f57f17; padding: 10px 12px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 13px;">
+                    ⚠️ Validar Incidencias
+                </a>
+                <a href="{% url 'incidencias_por_barrio' %}" style="background: white; color: #1565c0; padding: 10px 12px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 13px;">
+                    📍 Ver por Zona
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+</div>
+
+<!-- FOOTER INFO -->
+<div style="background: #f5f5f5; margin-top: 40px; padding: 30px 20px; text-align: center; border-top: 1px solid #e0e0e0;">
+    <p style="color: #666; margin: 0; font-size: 13px;">
+        📧 ¿Preguntas? Contacta con el equipo de soporte | 
+        🔒 Tus datos están seguros | 
+        ✅ Última actualización: Hoy
+    </p>
 </div>
 
 {{ arboles|json_script:"arboles-data" }}

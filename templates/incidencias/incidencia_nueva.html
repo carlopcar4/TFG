@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva incidencia - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 30px auto; padding: 20px;">
+    <h1>Reportar nueva incidencia</h1>
+    
+    {% if arbol %}
+        <div style="background-color: #e8f5e9; border-left: 4px solid #56ab6a; padding: 15px; margin-bottom: 20px;">
+            <p><strong>Árbol seleccionado:</strong> Árbol #{{ arbol.id }} - {{ arbol.especie.nombre_comun }} en {{ arbol.barrio.nombre }}</p>
+        </div>
+    {% elif alcorque %}
+        <div style="background-color: #e8f5e9; border-left: 4px solid #56ab6a; padding: 15px; margin-bottom: 20px;">
+            <p><strong>Alcorque seleccionado:</strong> Alcorque #{{ alcorque.id }} en {{ alcorque.barrio.nombre }}</p>
+        </div>
+    {% else %}
+        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin-bottom: 20px;">
+            <p><strong>Nota:</strong> Debes seleccionar un árbol o un alcorque en el formulario siguiente.</p>
+        </div>
+    {% endif %}
+    
+    <form method="POST" enctype="multipart/form-data" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_titulo" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.titulo.label }}</label>
+            {% if form.titulo.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.titulo.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.titulo }}
+            <style>
+                #id_titulo {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                }
+            </style>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_descripcion" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.descripcion.label }}</label>
+            {% if form.descripcion.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.descripcion.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.descripcion }}
+            <style>
+                #id_descripcion {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                    font-family: Arial, sans-serif;
+                }
+            </style>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_grado_incidencia" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.grado_incidencia.label }}</label>
+            {% if form.grado_incidencia.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.grado_incidencia.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.grado_incidencia }}
+            <style>
+                #id_grado_incidencia {
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+            </style>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_arbol" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.arbol.label }}</label>
+            {% if form.arbol.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.arbol.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.arbol }}
+            <style>
+                #id_arbol {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                }
+            </style>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_alcorque" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.alcorque.label }}</label>
+            {% if form.alcorque.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.alcorque.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.alcorque }}
+            <style>
+                #id_alcorque {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                }
+            </style>
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_foto" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.foto.label }}</label>
+            {% if form.foto.errors %}
+                <div style="color: #d32f2f; margin-bottom: 5px;">
+                    {% for error in form.foto.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {{ form.foto }}
+            <small style="color: #666;">Formato: JPG, PNG. Tamaño máximo: 5MB</small>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin-bottom: 15px;">
+                {% for error in form.non_field_errors %}
+                    <p style="color: #d32f2f; margin: 0;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #56ab6a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Reportar incidencia
+            </button>
+            <a href="{% url 'incidencia_lista' %}" style="background-color: #ccc; color: black; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

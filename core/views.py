@@ -9,5 +9,8 @@ def inicio(request):
     context = {
         "arboles": arboles,
         "alcorques": alcorques,
+        "total_arboles": Arbol.objects.count(),
+        "alcorques_count": Alcorque.objects.count(),
+        "total_incidencia": Incidencia.objects.count(),
     }
     return render(request, "core/inicio.html", context)

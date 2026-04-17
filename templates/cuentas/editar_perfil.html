@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Editar perfil - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1 style="margin: 0;">Editar perfil</h1>
+        <a href="{% url 'perfil' %}" style="background-color: #007bff; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px;">
+            Volver a perfil
+        </a>
+    </div>
+    
+    <form method="POST" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_nombre" style="display: block; font-weight: bold; margin-bottom: 5px;">{{ form.nombre.label }}</label>
+            {{ form.nombre }}
+            <style>
+                #id_nombre {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+                }
+            </style>
+        </div>
+        
+        <div style="background-color: #e3f2fd; border-left: 4px solid #1976d2; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+            <p style="margin: 0; color: #1565c0;"><strong>Nota:</strong> Tu correo no puede editarse por razones de seguridad.</p>
+        </div>
+        
+        {% if form.non_field_errors %}
+            <div style="background-color: #ffebee; border-left: 4px solid #d32f2f; padding: 15px; margin-bottom: 15px; border-radius: 4px;">
+                {% for error in form.non_field_errors %}
+                    <p style="color: #d32f2f; margin: 0;">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="background-color: #56ab6a; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                Guardar cambios
+            </button>
+            <a href="{% url 'perfil' %}" style="background-color: #ccc; color: black; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block;">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

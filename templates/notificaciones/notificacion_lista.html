@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Notificaciones - Inventario de Sevilla{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 30px auto; padding: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>Notificaciones</h1>
+        {% if sin_leer_count > 0 %}
+            <form method="POST" action="{% url 'notificacion_marcar_todas_leidas' %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background-color: #2196F3; color: white; padding: 8px 15px; border-radius: 4px; border: none; cursor: pointer;">✓ Marcar todas como leídas</button>
+            </form>
+        {% endif %}
+    </div>
+
+    {% if notificaciones %}
+        <div style="background-color: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+            <p><strong>{{ sin_leer_count }}</strong> notificación(es) sin leer</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for notif in notificaciones %}
+                <div style="background-color: {% if notif.leido %}#f5f5f5{% else %}#fff9c4{% endif %}; border: 1px solid #ddd; border-radius: 5px; padding: 15px; display: flex; justify-content: space-between; align-items: start;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <span style="background-color: {% if notif.tipo == 'ESTADO_CAMBIO' %}#4CAF50{% else %}#FF9800{% endif %}; color: white; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">{{ notif.get_tipo_display }}</span>
+                            <span style="color: #999; font-size: 14px;">{{ notif.fecha_creacion|date:"d/m/Y H:i" }}</span>
+                            {% if not notif.leido %}
+                                <span style="background-color: #ff5722; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: bold;">NUEVA</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'incidencia_detalle' notif.incidencia.pk %}" style="color: #007bff; text-decoration: none; font-weight: bold; display: block; margin-bottom: 5px;">{{ notif.incidencia.titulo }}</a>
+                        <p style="color: #555; margin: 5px 0; font-size: 15px;">{{ notif.mensaje }}</p>
+                    </div>
+                    {% if not notif.leido %}
+                        <form method="POST" action="{% url 'notificacion_marcar_leido' notif.pk %}" style="margin-left: 15px;">
+                            {% csrf_token %}
+                            <button type="submit" style="background-color: #4CAF50; color: white; padding: 6px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 14px;">Marcar como leída</button>
+                        </form>
+                    {% else %}
+                        <span style="color: #999; font-size: 14px; margin-left: 15px;">✓ Leído</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="background-color: #e8f5e9; border-left: 4px solid #4caf50; padding: 15px; border-radius: 5px; text-align: center;">
+            <p style="color: #2e7d32; font-size: 16px;">No tienes notificaciones</p>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'incidencia_lista' %}" style="background-color: #999; color: white; padding: 10px 20px; border-radius: 4px; text-decoration: none; display: inline-block;">← Volver a mis incidencias</a>
+    </div>
+</div>
+{% endblock %}
