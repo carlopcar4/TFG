@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 p-3 min-vh-100">
+            <div class="list-group w-100">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                {% endif %}
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una
+                    especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                <a href="{% url 'barrioNuevo' %}" class="list-group-item list-group-item-action py-3">Crear nuevo barrio</a>
+            </div>
+        </div>
+        <div class="col-md-10 p-3 bg-gris">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="card w-50 mt-5 mx-auto">
+                    <div class="card-header">
+                        <h1 class="mb-4">Crear un nuevo barrio</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="nombre">Nombre</label>
+                            <input class="form-control" type="text" name="nombre" id="nombre">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="delimitacion">Delimitación</label>
+                            <input class="form-control" type="text" name="delimitacion" id="delimitacion">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="m-3">
+                            <button class="btn btn-success" type="submit">Crear</button>
+                        </div>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

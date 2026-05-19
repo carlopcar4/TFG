@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-md-10 p-3 bg-gris mx-auto min-vh-100">
+            <div class="card m-3 w-75 mx-auto">
+                <div class="card-header">
+                    <h1>Mi perfil</h1>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-2">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="username">Usuario</label>
+                                <input class="form-control" type="text" name="username" id="username"
+                                    placeholder="{{ usuario.username }}">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email">Correo electrónico</label>
+                                <input class="form-control" type="text" name="email" id="email"
+                                    placeholder="{{ usuario.email }}" readonly>
+                            </div>
+                            <div class="m-3">
+                                <button class="btn btn-success" type="submit">Guardar cambios</button>
+                            </div>
+                        </form>
+
+
+                        <h5 class="mt-5">Cambiar contraseña</h5>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="old_password">Contraseña antigua</label>
+                                <input class="form-control" type="password" name="old_password" id="old_password">
+                            </div>
+                            <div class="mb-3">
+                                <label for="old_password">Contraseña antigua</label>
+                                <input class="form-control" type="password" name="old_password" id="old_password">
+                            </div>
+                            <div class="mb-3">
+                                <label for="new_password2">Repita la contraseña</label>
+                                <input class="form-control" type="password" name="new_password2" id="new_password2">
+                            </div>
+                            <div class="m-3">
+                                <button class="btn btn-danger" type="submit">Cambiar contraseña</button>
+                            </div>
+                        </form>
+
+                        <h5 class="mt-5">Eliminar la cuenta</h5>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <p for="new_password2">¿Está seguro de que desea eliminar la cuenta permanentemente?</p>
+                                <button class="btn btn-danger" type="submit" name="eliminar">Eliminar cuenta</button>
+                            </div>
+                            <div class="m-3">
+                                
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

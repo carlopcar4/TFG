@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-12 col-md-10 p-3 min-vh-100 bg-gris">
+
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="card w-75 mt-5 mx-auto">
+                    <div class="card-header">
+                        <h1 class="mb-4">Crear una nueva incidencia</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="titulo">Título</label>
+                            <input class="form-control" type="text" name="titulo" id="titulo">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="descripcion">Descripción</label>
+                            <textarea class="form-control" name="descripcion" id="descripcion"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="grado">Grado</label>
+                            <select class="form-select" name="grado" id="grado">
+                                {% for value, label in grados %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="foto">Imagen de la incidencia</label>
+                            <input class="form-control" type="file" name="foto" id="foto" accept="image/*">
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="m-3">
+                            <button class="btn btn-success" type="submit">Reportar</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

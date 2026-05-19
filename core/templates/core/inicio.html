@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-gris">
+
+            <h3>Acerca del proyecto</h3>
+            <p>Plataforma para consultar el inventario de arbolado de Sevilla y registrar incidencias relacionadas con
+                árboles y alcorques.
+            </p>
+            <p></p>
+            <h3>Leyenda</h3>
+            <ul>
+                <li>Árbol → Verde</li>
+                <li>Alcorque → Rojo</li>
+            </ul>
+        </div>
+        <div class="col-md-10 mapa" id="mapa">
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const usuario = "{{ request.user.is_authenticated }}";
+        var mapa = L.map('mapa').setView([37.388611, -5.94], 14);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            referrerPolicy: 'origin'
+        }).addTo(mapa);
+
+        var elementos = [
+            {% for elemento in elementos %}
+        {
+            id: "{{ elemento.id }}",
+                tipo: "{{ elemento.get_tipo_display }}",
+                    especie: "{{ elemento.especie }}",
+                        familia: "{{ elemento.especie.familia }}",
+                            latitud: "{{ elemento.latitud }}",
+                                longitud: "{{ elemento.longitud }}",
+                                    potencial_plant: "{{ elemento.get_potencial_plant_display }}",
+                                        descripcion: "{{ elemento.especie.descripcion }}",
+        },
+        {% endfor %}
+    ];
+
+        elementos.forEach(elemento => {
+            if (elemento.latitud && elemento.longitud) {
+                const latitud = parseFloat(elemento.latitud.replace(',', '.'));
+                const longitud = parseFloat(elemento.longitud.replace(',', '.'));
+                
+                const ja = elemento.id
+                let color = 'green';
+                if (elemento.tipo == 'Árbol') {
+                    if (elemento.descripcion == '') {
+                        if (usuario == 'True'){
+                        l = "Especie: " + elemento.especie + "<br>Familia: " + elemento.familia + '<br><a href="incidencias/nueva?arbol=' + elemento.id + '">Crear incidencia</a>'
+                        } else{
+                            l = "Especie: " + elemento.especie + "<br>Familia: " + elemento.familia
+                        }
+                    } else {
+                        if (usuario == 'True'){
+                        l = "Especie: " + elemento.especie + "<br>Familia: " + elemento.familia + "<br>Descripción: " + elemento.descripcion + '<br><a href="incidencias/nueva?arbol=' + elemento.id + '">Crear incidencia</a>'
+                        } else if (usuario == 'False'){
+                            l = "Especie: " + elemento.especie + "<br>Familia: " + elemento.familia + "<br>Descripción: " + elemento.descripcion
+                        }
+                    }
+                }
+                else if (elemento.tipo == 'Alcorque') {
+                    color = 'red'
+                    l = 'Alcorque disponible <br>Estado: ' + elemento.potencial_plant + ' para ser plantado' + '<br><a href="incidencias/nueva?arbol=' + elemento.id + '">Crear incidencia</a>'
+                }
+                var circle = L.circle([latitud, longitud], {
+                    color: color,
+                    radius: 2
+                }).addTo(mapa).bindPopup(l)
+            }
+        })
+    </script>
+</div>
+{% endblock %}

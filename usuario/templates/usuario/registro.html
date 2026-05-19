@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="card m-3 w-75 mx-auto">
+        <div class="card-header">
+            <h1>Crear usuario</h1>
+        </div>
+        <form action="" method="post">
+            <div class="card-body">
+                {% csrf_token %}
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="row g-2">
+                    <div class="mb-3">
+                        <label for="email">Correo electrónico</label>
+                        <input class="form-control" type="text" name="email" id="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="username">Usuario</label>
+                        <input class="form-control" type="text" name="username" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password1">Contraseña</label>
+                        <input class="form-control" type="password" name="password1" id="password1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password2">Repita la contraseña</label>
+                        <input class="form-control" type="password" name="password2" id="password2" required>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="m-3">
+                    <button class="btn btn-success" type="submit">Reportar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

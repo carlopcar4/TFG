@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-md-10 p-3 bg-gris min-vh-100">
+            {% if user.is_staff %}
+            <h1>Incidencias</h1>
+            {% else %}
+            <h1>Mis incidencias</h1>
+            {% endif %}
+            <form action="">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select class="form-select mb-2 mb-md-0" name="estado" id="estado">
+                            <option value="">-- Estados --</option>
+                            {% for estado in estados %}
+                            <option value="{{ estado.0 }}">{{ estado.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select mb-2 mb-md-0" name="grado" id="grado">
+                            <option value="">-- Grados --</option>
+                            {% for grado in grados %}
+                            <option value="{{ grado.0 }}">{{ grado.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select mb-2 mb-md-0" name="barrio" id="barrio">
+                            <option value="">-- Barrios --</option>
+                            {% for barrio in barrios %}
+                            <option value="{{ barrio.id }}">{{ barrio.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" type="submit">Buscar</button>
+                    </div>
+                </div>
+            </form>
+            {% if incidencias %}
+            {% for incidencia in incidencias %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h4><a href="{{ incidencia.id }}">{{ incidencia.titulo }}</a></h4>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <p class="card-text">Descripción: {{ incidencia.descripcion }}</p>
+                            <p class="card-text">Grado: {{ incidencia.grado }}</p>
+                            <p class="card-text">Fecha creación: {{ incidencia.fecha_reporte }}</p>
+                            <p class="card-text">Actualizado: {{ incidencia.fecha_act }}</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            {% if incidencia.estado == 'pendiente' %}
+                            <span class="badge mb-2 bg-warning">{{ incidencia.get_estado_display }}</span>
+                            {% elif incidencia.estado == 'abierta' %}
+                            <span class="badge mb-2 bg-primary">{{ incidencia.get_estado_display }}</span>
+                            {% elif incidencia.estado == 'en_proceso' %}
+                            <span class="badge mb-2 bg-info">{{ incidencia.get_estado_display }}</span>
+                            {% elif incidencia.estado == 'cerrada' %}
+                            <span class="badge mb-2 bg-success">{{ incidencia.get_estado_display }}</span>
+                            {% endif %}
+                            {% if incidencia.foto %}
+                            <img class="img-fluid" src="{{ incidencia.foto.url }}" alt="">
+                            {% endif %}
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

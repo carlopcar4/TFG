@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-md-10 p-3 bg-gris min-vh-100">
+            <div class="card w-75 mx-auto">
+                <h1 class="card-header text-center">Lista de Especies</h1>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Nombre científico</th>
+                                <th>Familia</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for especie in especies %}
+                            <tr>
+                                <td>{{ especie.nombre_comun }}</td>
+                                <td>{{ especie.nombre_cient }}</td>
+                                <td>{{ especie.familia }}</td>
+                                <td>{{ especie.descripcion }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

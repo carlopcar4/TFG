@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-md-10 p-3  bg-gris min-vh-100">
+            <div class="card mt-4 w-md-75 mx-auto">
+                <h1 class="card-header text-center">Mis notificaciones</h1>
+                {% if notificaciones %}
+                {% for notificacion in notificaciones %}
+                <div class="card m-4">
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-11">
+                                {% if notificacion.incidencia %}
+                                <h4>{{ notificacion.incidencia.titulo }}</h4>
+                                {% endif %}
+                                <p>{{ notificacion.get_tipo_display }}</p>
+                            </div>
+                            <div class="col-1">
+                                <form action="{% url 'eliminarNotificacion' notificacion.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button class="btn" type="submit">X</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <h4 class="card-body text-center mt-6">NO TIENES NOTIFICACIONES</h4>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

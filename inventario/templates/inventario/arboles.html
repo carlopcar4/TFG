@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="col-md-10 p-3 bg-gris min-vh-100">
+            <div class="card">
+                <h1 class="card-header text-center">Lista de árboles y alcorques</h1>
+                <form action="">
+                    <div class="row m-4 card-body">
+                        <div class="col-md-2">
+                            <select class="form-select" name="tipo" id="tipo">
+                                <option value="">-- Tipo --</option>
+                                {% for tipo in tipos %}
+                                <option value="{{ tipo.0 }}">{{ tipo.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="especie" id="especie">
+                                <option value="">-- Especies --</option>
+                                {% for especie in especies %}
+                                <option value="{{ especie }}">{{ especie.nombre_comun }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="barrio" id="barrio">
+                                <option value="">-- Barrios --</option>
+                                {% for barrio in barrios %}
+                                <option value="{{ barrio.nombre }}">{{ barrio.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" name="estado" id="estado">
+                                <option value="">-- Estados --</option>
+                                {% for estado in estados %}
+                                <option value="{{ estado.0 }}">{{ estado.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-primary" type="submit">Buscar</button>
+                        </div>
+                    </div>
+                </form>
+                {% if arboles %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Especie</th>
+                                <th>Barrio</th>
+                                <th>Estado</th>
+                                <th>Latitud</th>
+                                <th>Longitud</th>
+                                <th>Dirección</th>
+                                <th>Fecha plantación</th>
+                                <th>Potencial plantación</th>
+                                <th>Editar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for arbol in arboles %}
+                            <tr>
+                                <td>{{ arbol.get_tipo_display }}</td>
+                                <td>{{ arbol.especie }}</td>
+                                <td>{{ arbol.barrio }}</td>
+                                <td>{{ arbol.get_estado_display }}</td>
+                                <td>{{ arbol.latitud }}</td>
+                                <td>{{ arbol.longitud }}</td>
+                                <td>{{ arbol.direccion }}</td>
+                                <td>{{ arbol.fecha_plant }}</td>
+                                <td>{{ arbol.get_potencial_plant_display }}</td>
+                                <td><a href="{{ arbol.id }}/editar">Editar</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

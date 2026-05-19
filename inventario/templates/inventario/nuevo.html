@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-12 col-md-2 p-3">
+            <button class="btn btn-outline-secondary d-md-none mb-2" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarizquierda">
+                ≡
+            </button>
+            <div class="collapse d-md-block list-group w-100" id="navbarizquierda">
+                <a href="{% url 'inicio' %}" class="list-group-item list-group-item-action py-3">Inicio</a>
+                {% if user.is_staff %}
+                <a href="{% url 'listarIncidencias' %}"
+                    class="list-group-item list-group-item-action py-3">Incidencias</a>
+                {% else %}
+                <a href="{% url 'listarIncidencias' %}" class="list-group-item list-group-item-action py-3">Mis
+                    incidencias</a>
+                {% endif %}
+                <a href="{% url 'perfil' %}" class="list-group-item list-group-item-action py-3">Mi perfil</a>
+                {% if user.is_staff %}
+                <a href="{% url 'arboles' %}" class="list-group-item list-group-item-action py-3">Inventario</a>
+                <a href="{% url 'añadirArbol' %}" class="list-group-item list-group-item-action py-3">Añadir árbol</a>
+                <a href="{% url 'especies' %}" class="list-group-item list-group-item-action py-3">Lista de especies</a>
+                <a href="{% url 'especieNueva' %}" class="list-group-item list-group-item-action py-3">Crear una especie</a>
+                <a href="{% url 'barrios' %}" class="list-group-item list-group-item-action py-3">Lista de barrios</a>
+                {% endif %}
+            </div>
+        </nav>
+        <div class="col-md-10 p-3 bg-gris min-vh-100">
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="card w-50 mt-5 mx-auto">
+                    <div class="card-header">
+                        <h1 class="mb-4">Crear un nuevo árbol o alcorque</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="form-label" for="tipo">Tipo</label>
+                            <select class="form-select" name="tipo" id="tipo">
+                                <option value="arbol" selected>Árbol</option>
+                                <option value="alcorque">Alcorque</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="barrio">Barrio</label>
+                            <select class="form-select" name="barrio" id="barrio" required>
+                                <option value="" selected>--------</option>
+                                {% for barrio in barrios %}
+                                <option value="{{ barrio.id }}">{{ barrio.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="especie">Especie</label>
+                            <select class="form-select" name="especie" id="especie">
+                                <option value="" selected>----------</option>
+                                {% for especie in especies %}
+                                <option value="{{ especie.id }}">{{ especie.nombre_comun }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="estado">Estado</label>
+                            <select class="form-select" name="estado" id="estado" required>
+                                <option value="" selected>----------</option>
+                                {% for value, label in estados %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="latitud">Latitud</label>
+                            <input class="form-control" type="number" step="1e-17" name="latitud" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="longitud">Longitud</label>
+                            <input class="form-control" type="number" step="1e-17" name="longitud" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="direccion">Dirección</label>
+                            <input class="form-control" type="text" name="direccion" id="direccion">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="fecha_plant">Fecha de plantación</label>
+                            <input class="form-control" type="date" name="fecha_plant" id="fecha_plant">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="potencial_plant">¿Se puede plantar en el alcorque?</label>
+                            <select class="form-select" name="potencial_plant" id="potencial_plant">
+                                <option value="" selected>----------</option>
+                                <option value="apto">Apto</option>
+                                <option value="no_apto">No apto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="m-3">
+                            <button class="btn btn-success" type="submit">Crear</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
